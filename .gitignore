@@ -1,1 +1,32 @@
-venv
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# virtualenv
+venv/
+.env
+.env.*     # nếu dùng nhiều cấu hình
+
+# IDEs/editors
+.vscode/
+.idea/
+*.suo
+*.user
+
+# OS
+.DS_Store
+Thumbs.db
+
+# database / local
+*.sqlite3
+*.db
+
+# logs
+*.log
+test.txt
