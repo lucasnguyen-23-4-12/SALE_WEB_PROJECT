@@ -9,6 +9,10 @@ class PaymentMethodBase(BaseModel):
 class PaymentMethodCreate(PaymentMethodBase):
     pass
 
+class PaymentMethodUpdate(BaseModel):
+    mode_name: Optional[str] = None
+    pay_date: Optional[date] = None
+
 class PaymentMethodResponse(PaymentMethodBase):
     payment_method_id: int
 

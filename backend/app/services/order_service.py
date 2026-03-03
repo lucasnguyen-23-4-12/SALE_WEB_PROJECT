@@ -9,7 +9,28 @@ from app.services.exceptions import *
 from datetime import datetime
 
 
-def create_order(db: Session, customer_id: int, payment_method_id: int, items: list):
+def get_order_by_id(db: Session, order_id: int):
+    """Lấy order theo ID"""
+    order = db.query(Order).filter(
+        Order.order_id == order_id
+    ).first()
+
+    if not order:
+        raise NotFoundException("Order")
+
+    return order
+
+
+def get_all_orders(db: Session, skip: int = 0, limit: int = 10):
+    """Lấy tất cả orders (có pagination)"""
+    return db.query(Order).offset(skip).limit(limit).all()
+
+
+def create_order(db: Session, payload):
+    """Tạo order mới - payload là OrderCreate schema"""
+    customer_id = payload.customer_id
+    payment_method_id = payload.payment_method_id
+    items = [item.model_dump() for item in payload.items]
 
     customer = db.query(Customer).filter(
         Customer.customer_id == customer_id
@@ -78,3 +99,13 @@ def create_order(db: Session, customer_id: int, payment_method_id: int, items: l
     except SQLAlchemyError as e:
         db.rollback()
         raise BusinessLogicException("Database transaction failed")
+
+
+def delete_order(db: Session, order_id: int):
+    """Xóa order"""
+    order = get_order_by_id(db, order_id)
+
+    db.delete(order)
+    db.commit()
+
+    return {"message": "Order deleted successfully"}

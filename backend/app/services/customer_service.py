@@ -21,6 +21,11 @@ def get_customer_by_id(db: Session, customer_id: int):
     return customer
 
 
+def get_all_customers(db: Session, skip: int = 0, limit: int = 10):
+    """Lấy tất cả customers (có pagination)"""
+    return db.query(Customer).offset(skip).limit(limit).all()
+
+
 def create_customer(db: Session, data: CustomerCreate):
 
     existing = db.query(Customer).filter(
