@@ -1,5 +1,7 @@
+from datetime import date, datetime
+from typing import Literal, Optional
+
 from pydantic import BaseModel
-from typing import Optional
 
 
 class AdminLoginRequest(BaseModel):
@@ -35,3 +37,19 @@ class ProductResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+
+class OrderResponse(BaseModel):
+    id: int
+    user_id: int
+    total_price: float
+    status: str
+    created_at: date | datetime | None = None
+
+    model_config = {
+        "from_attributes": True
+    }
+
+
+class OrderStatusUpdate(BaseModel):
+    status: Literal["pending", "processing", "shipped", "delivered", "cancelled"]

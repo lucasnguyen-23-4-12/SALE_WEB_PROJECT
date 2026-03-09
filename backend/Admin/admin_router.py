@@ -7,6 +7,8 @@ from Admin.admin_auth import authenticate_admin, create_access_token
 from Admin.admin_schema import (
     AdminLoginRequest,
     AdminLoginResponse,
+    OrderResponse,
+    OrderStatusUpdate,
     ProductCreate,
     ProductResponse,
     ProductUpdate,
@@ -41,6 +43,37 @@ def admin_login(payload: AdminLoginRequest):
 @router.get("/products", response_model=list[ProductResponse])
 def get_products(db: Session = Depends(get_db)):
     return admin_service.get_products(db)
+
+
+@router.get("/orders", response_model=list[OrderResponse])
+def get_orders(db: Session = Depends(get_db)):
+    return admin_service.get_orders(db)
+
+
+@router.get("/orders/{order_id}", response_model=OrderResponse)
+def get_order(order_id: int, db: Session = Depends(get_db)):
+    order = admin_service.get_order_by_id(db, order_id)
+    if not order:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Order not found",
+        )
+    return order
+
+
+@router.patch("/orders/{order_id}/status", response_model=OrderResponse)
+def update_order_status(
+    order_id: int,
+    payload: OrderStatusUpdate,
+    db: Session = Depends(get_db),
+):
+    updated_order = admin_service.update_order_status(db, order_id, payload.status)
+    if not updated_order:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Order not found",
+        )
+    return updated_order
 
 
 @router.post(
