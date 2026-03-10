@@ -5,7 +5,8 @@ from typing import List
 from app.schemas.customer import (
     CustomerCreate,
     CustomerUpdate,
-    CustomerResponse
+    CustomerResponse,
+    CustomerLogin
 )
 from app.services import customer_service
 from app.core.dependencies import get_db
@@ -26,6 +27,19 @@ def create_customer(
     db: Session = Depends(get_db)
 ):
     return customer_service.create_customer(db, payload)
+
+
+@router.post(
+    "/login",
+    response_model=CustomerResponse
+)
+def login_customer(
+    payload: CustomerLogin,
+    db: Session = Depends(get_db)
+):
+    return customer_service.authenticate_customer(
+        db, payload.email_or_phone, payload.password
+    )
 
 
 @router.get(

@@ -8,6 +8,10 @@ class ProductBase(BaseModel):
     image_url: Optional[str] = None
     unit_price: Decimal
     category_id: int
+    discount_percent: Optional[int] = 0
+    stock_quantity: Optional[int] = 0
+    rating_avg: Optional[Decimal] = 0
+    total_reviews: Optional[int] = 0
 
 class ProductCreate(ProductBase):
     pass

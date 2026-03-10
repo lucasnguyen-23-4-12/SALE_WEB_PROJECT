@@ -30,6 +30,9 @@ def create_order(db: Session, payload):
     """Tạo order mới - payload là OrderCreate schema"""
     customer_id = payload.customer_id
     payment_method_id = payload.payment_method_id
+    shipping_address = getattr(payload, 'shipping_address', None)
+    shipping_fee = getattr(payload, 'shipping_fee', 0.0)
+    discount_amount = getattr(payload, 'discount_amount', 0.0)
     items = [item.model_dump() for item in payload.items]
 
     customer = db.query(Customer).filter(
@@ -54,7 +57,10 @@ def create_order(db: Session, payload):
             customer_id=customer_id,
             payment_method_id=payment_method_id,
             order_date=datetime.utcnow(),
-            status="Pending"
+            status="Pending",
+            shipping_address=shipping_address,
+            shipping_fee=shipping_fee,
+            discount_amount=discount_amount
         )
 
         db.add(new_order)

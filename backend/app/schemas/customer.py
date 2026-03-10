@@ -13,6 +13,11 @@ class CustomerBase(BaseModel):
 class CustomerCreate(CustomerBase):
     password: str
 
+# Login
+class CustomerLogin(BaseModel):
+    email_or_phone: str
+    password: str
+
 # Update
 class CustomerUpdate(BaseModel):
     customer_name: Optional[str] = None
@@ -23,6 +28,8 @@ class CustomerUpdate(BaseModel):
 class CustomerResponse(CustomerBase):
     customer_id: int
     created_at: Optional[date]
+    updated_at: Optional[date]
+    is_active: Optional[int]
 
     model_config = {
         "from_attributes": True

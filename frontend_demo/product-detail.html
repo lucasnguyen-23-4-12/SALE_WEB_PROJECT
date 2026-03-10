@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết sản phẩm - Tech Store</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <a href="index.html">🏪 Tech Store</a>
+            </div>
+            <ul class="navbar-menu">
+                <li><a href="index.html">Trang chủ</a></li>
+                <li><a href="products.html">Sản phẩm</a></li>
+                <li><a href="customer-login.html">Tài khoản</a></li>
+                <li><a href="cart.html" class="cart-link">🛒 Giỏ hàng <span class="cart-count">0</span></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="index.html">Trang chủ</a> > <a href="products.html">Sản phẩm</a> > <span id="breadcrumb-name">Sản phẩm</span>
+    </div>
+
+    <!-- Product Detail -->
+    <div class="product-detail-container" id="product-detail">
+        <!-- Sẽ được load bởi JavaScript -->
+    </div>
+
+    <!-- Related Products -->
+    <section class="related-products">
+        <h2>Sản phẩm liên quan</h2>
+        <div class="products-grid" id="related-grid">
+            <!-- Sẽ được load bởi JavaScript -->
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="reviews-section">
+        <h2>Đánh giá khách hàng</h2>
+        <div class="reviews-container">
+            <div class="reviews-summary">
+                <div class="rating-overview">
+                    <span class="star-rating" id="avg-rating">4.5</span>
+                    <span class="review-count" id="review-count">25 đánh giá</span>
+                    <div class="rating-bars">
+                        <div class="rating-bar">
+                            <span>5 ⭐</span>
+                            <div class="bar"><div class="fill" style="width: 60%"></div></div>
+                            <span>15</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>4 ⭐</span>
+                            <div class="bar"><div class="fill" style="width: 24%"></div></div>
+                            <span>6</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>3 ⭐</span>
+                            <div class="bar"><div class="fill" style="width: 12%"></div></div>
+                            <span>3</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>2 ⭐</span>
+                            <div class="bar"><div class="fill" style="width: 0%"></div></div>
+                            <span>0</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>1 ⭐</span>
+                            <div class="bar"><div class="fill" style="width: 4%"></div></div>
+                            <span>1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reviews-list" id="reviews-list">
+                <!-- Review items will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Giới thiệu</h4>
+                <ul>
+                    <li><a href="#">Về chúng tôi</a></li>
+                    <li><a href="#">Chính sách bảo mật</a></li>
+                    <li><a href="#">Điều khoản dịch vụ</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Hỗ trợ khách hàng</h4>
+                <ul>
+                    <li><a href="#">Liên hệ</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Hướng dẫn mua hàng</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Gửi theo dõi</h4>
+                <ul>
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Twitter</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Liên hệ</h4>
+                <p>Email: support@techstore.com</p>
+                <p>Hot line: 1800-1234</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Tech Store. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        function getProductIdFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return parseInt(params.get('id')) || 1;
+        }
+
+        async function renderProductDetail() {
+            const productId = getProductIdFromURL();
+            let product = null;
+
+            try {
+                // Try to load from backend
+                product = await app.loadProduct(productId);
+            } catch (err) {
+                console.warn('Could not load product from backend, using mock', err);
+                // Fallback to mock
+                product = mockProducts.find(p => p.product_id === productId);
+            }
+
+            if (!product) {
+                document.getElementById('product-detail').innerHTML = '<p>Sản phẩm không tìm thấy</p>';
+                return;
+            }
+
+            document.getElementById('breadcrumb-name').textContent = product.product_name;
+
+            // Calculate original_price if not present
+            const unit = parseFloat(product.unit_price) || 0;
+            const discount = parseFloat(product.discount_percent) || 0;
+            const original = unit / (1 - discount / 100) || unit;
+            const saved = original - unit;
+
+            const html = `
+                <div class="product-detail-wrapper">
+                    <div class="product-images">
+                        <div class="main-image">
+                            <img id="main-image" src="https://via.placeholder.com/500x500?text=${encodeURIComponent(product.product_name)}" alt="${product.product_name}">
+                            <span class="product-badge">-${product.discount_percent}%</span>
+                        </div>
+                        <div class="thumbnail-images">
+                            <img src="https://via.placeholder.com/80x80?text=1" alt="Thumbnail 1" class="thumbnail" onclick="document.getElementById('main-image').src=this.src">
+                            <img src="https://via.placeholder.com/80x80?text=2" alt="Thumbnail 2" class="thumbnail" onclick="document.getElementById('main-image').src=this.src">
+                            <img src="https://via.placeholder.com/80x80?text=3" alt="Thumbnail 3" class="thumbnail" onclick="document.getElementById('main-image').src=this.src">
+                            <img src="https://via.placeholder.com/80x80?text=4" alt="Thumbnail 4" class="thumbnail" onclick="document.getElementById('main-image').src=this.src">
+                        </div>
+                    </div>
+
+                    <div class="product-details">
+                        <h1>${product.product_name}</h1>
+                        <p class="product-category">Danh mục: ${product.category_name}</p>
+                        
+                        <div class="product-rating">
+                            <span class="stars">⭐ ${product.rating_avg}/5</span>
+                            <span class="reviews">(${product.total_reviews} đánh giá)</span>
+                        </div>
+
+                        <div class="product-pricing">
+                            <span class="original-price">Giá gốc: ${original.toLocaleString('vi-VN')}đ</span>
+                            <span class="sale-price">${unit.toLocaleString('vi-VN')}đ</span>
+                            <span class="discount-badge">Tiết kiệm ${saved.toLocaleString('vi-VN')}đ</span>
+                        </div>
+
+                        <div class="product-stock">
+                            <span class="stock-status" id="stock-status">Còn hàng</span>
+                            <div class="quantity-selector">
+                                <label>Số lượng:</label>
+                                <button id="qty-minus">−</button>
+                                <input type="number" id="qty-input" value="1" min="1" max="10">
+                                <button id="qty-plus">+</button>
+                            </div>
+                        </div>
+
+                        <div class="product-actions">
+                            <button class="btn btn-primary btn-large" id="add-to-cart">🛒 Thêm vào giỏ hàng</button>
+                            <button class="btn btn-secondary btn-large">❤️ Yêu thích</button>
+                        </div>
+
+                        <div class="product-info-box">
+                            <h3>Thông tin chi tiết</h3>
+                            <p>${product.description || 'Sản phẩm chất lượng cao, bảo hành chính hãng.'}</p>
+                        </div>
+
+                        <div class="product-safe-box">
+                            <h3>🛡️ Cam kết an toàn</h3>
+                            <ul>
+                                <li>✓ Chính hãng 100%</li>
+                                <li>✓ Bảo hành 12 tháng</li>
+                                <li>✓ Giao hàng nhanh 24 giờ</li>
+                                <li>✓ Hoàn tiền nếu không hài lòng</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('product-detail').innerHTML = html;
+
+            // Quantity controls
+            document.getElementById('qty-minus').addEventListener('click', function() {
+                const input = document.getElementById('qty-input');
+                if (input.value > 1) input.value--;
+            });
+
+            document.getElementById('qty-plus').addEventListener('click', function() {
+                const input = document.getElementById('qty-input');
+                if (input.value < 10) input.value++;
+            });
+
+            // Add to cart
+            document.getElementById('add-to-cart').addEventListener('click', function() {
+                const quantity = parseInt(document.getElementById('qty-input').value);
+                addToCart(product, quantity);
+                alert(`Đã thêm ${quantity} x ${product.product_name} vào giỏ hàng!`);
+            });
+        }
+
+        function renderRelatedProducts() {
+            const productId = getProductIdFromURL();
+            let product = mockProducts.find(p => p.product_id === productId);
+            let related = [];
+
+            if (product) {
+                related = mockProducts.filter(p => p.category_id === product.category_id && p.product_id !== productId).slice(0, 4);
+            }
+
+            const grid = document.getElementById('related-grid');
+            grid.innerHTML = related.map(p => `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://via.placeholder.com/250x250?text=${encodeURIComponent(p.product_name)}" alt="${p.product_name}">
+                        <span class="product-badge">-${p.discount_percent}%</span>
+                    </div>
+                    <div class="product-info">
+                        <h3>${p.product_name}</h3>
+                        <p class="product-category">${p.category_name}</p>
+                        <div class="product-rating">⭐ ${p.rating_avg}/5</div>
+                        <div class="product-price">
+                            <span class="original-price">${p.original_price.toLocaleString('vi-VN')}đ</span>
+                            <span class="sale-price">${p.unit_price.toLocaleString('vi-VN')}đ</span>
+                        </div>
+                        <a href="product-detail.html?id=${p.product_id}" class="btn btn-small">Xem chi tiết</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load sample reviews
+        function renderReviews() {
+            const mockReviews = [
+                { author: 'Nguyễn Văn A', rating: 5, date: '2 tuần trước', comment: 'Sản phẩm tuyệt vời, giao hàng nhanh!' },
+                { author: 'Trần Thị B', rating: 5, date: '3 tuần trước', comment: 'Rất hài lòng, sẽ mua lại!' },
+                { author: 'Phạm Văn C', rating: 4, date: '1 tháng trước', comment: 'Tốt, nhưng giá hơi cao' }
+            ];
+
+            const reviewsList = document.getElementById('reviews-list');
+            reviewsList.innerHTML = mockReviews.map(review => `
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="review-author">${review.author}</span>
+                        <span class="review-rating">${'⭐'.repeat(review.rating)}</span>
+                    </div>
+                    <div class="review-date">${review.date}</div>
+                    <p class="review-comment">${review.comment}</p>
+                </div>
+            `).join('');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async function() {
+            await renderProductDetail();
+            renderRelatedProducts();
+            renderReviews();
+        });
+    </script>
+</body>
+</html>

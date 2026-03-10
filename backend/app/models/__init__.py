@@ -4,3 +4,6 @@ from .order_item import OrderItem
 from .product import Product
 from .category import Category
 from .payment_method import PaymentMethod
+from .review import Review
+from .address import Address
+from .wishlist import Wishlist

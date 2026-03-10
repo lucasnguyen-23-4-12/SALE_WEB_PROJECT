@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Store - Cửa hàng bán lẻ công nghệ</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <a href="index.html">🏪 Tech Store</a>
+            </div>
+            <ul class="navbar-menu">
+                <li><a href="index.html" class="active">Trang chủ</a></li>
+                <li><a href="products.html">Sản phẩm</a></li>
+                <li><a href="customer-login.html">Tài khoản</a></li>
+                <li><a href="cart.html" class="cart-link">🛒 Giỏ hàng <span class="cart-count">0</span></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Banner Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Chào mừng đến Tech Store</h1>
+            <p>Nơi bán các sản phẩm công nghệ chính hãng, giá tốt nhất</p>
+            <a href="products.html" class="btn btn-primary">Mua sắm ngay</a>
+        </div>
+    </section>
+
+    <!-- Featured Categories -->
+    <section class="categories-section">
+        <h2>Danh mục sản phẩm</h2>
+        <div class="categories-grid">
+            <div class="category-card">
+                <div class="category-icon">📱</div>
+                <h3>Điện thoại</h3>
+                <p>Các điện thoại thông minh mới nhất</p>
+                <a href="products.html?category=smartphones" class="btn-link">Xem chi tiết →</a>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">💻</div>
+                <h3>Máy tính</h3>
+                <p>Laptop và PC hiệu suất cao</p>
+                <a href="products.html?category=computers" class="btn-link">Xem chi tiết →</a>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">🎧</div>
+                <h3>Phụ kiện</h3>
+                <p>Tai nghe, sạc, cáp chất lượng</p>
+                <a href="products.html?category=accessories" class="btn-link">Xem chi tiết →</a>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">⌚</div>
+                <h3>Đồng hồ thông minh</h3>
+                <p>Smartwatch và wearables</p>
+                <a href="products.html?category=wearables" class="btn-link">Xem chi tiết →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="featured-products">
+        <h2>Sản phẩm nổi bật</h2>
+        <div class="products-grid" id="featured-products">
+            <!-- Sản phẩm sẽ được load bởi JavaScript -->
+        </div>
+    </section>
+
+    <!-- Promotion Banner -->
+    <section class="promo-banner">
+        <h2>🎉 Khuyến mãi đặc biệt</h2>
+        <p>Giảm giá đến 30% cho các sản phẩm lựa chọn. Mua hôm nay, giao ngay!</p>
+        <a href="products.html" class="btn btn-secondary">Khám phá khuyến mãi</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Giới thiệu</h4>
+                <ul>
+                    <li><a href="#">Về chúng tôi</a></li>
+                    <li><a href="#">Chính sách bảo mật</a></li>
+                    <li><a href="#">Điều khoản dịch vụ</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Hỗ trợ khách hàng</h4>
+                <ul>
+                    <li><a href="#">Liên hệ</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Hướng dẫn mua hàng</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Gửi theo dõi</h4>
+                <ul>
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Twitter</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Liên hệ</h4>
+                <p>Email: support@techstore.com</p>
+                <p>Hot line: 1800-1234</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Tech Store. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        // Load featured products from backend or mock
+        document.addEventListener('DOMContentLoaded', async function() {
+            const featuredContainer = document.getElementById('featured-products');
+            try {
+                // Load from backend
+                const allProducts = await app.loadProductList(0, 12);
+                const featuredProducts = allProducts.slice(0, 4);
+                renderFeatured(featuredProducts);
+            } catch (err) {
+                console.error('Failed to load from backend:', err);
+                // Fallback to mock
+                const featuredProducts = mockProducts.slice(0, 4);
+                renderFeatured(featuredProducts);
+            }
+            
+            function renderFeatured(featuredProducts) {
+                featuredContainer.innerHTML = featuredProducts.map(product => {
+                    // Calculate original_price if not present
+                    const unit = parseFloat(product.unit_price) || 0;
+                    const discount = parseFloat(product.discount_percent) || 0;
+                    const original = unit / (1 - discount / 100) || unit;
+                    
+                    return `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://via.placeholder.com/250x250?text=${encodeURIComponent(product.product_name)}" alt="${product.product_name}">
+                        <span class="product-badge">-${product.discount_percent}%</span>
+                    </div>
+                    <div class="product-info">
+                        <h3>${product.product_name}</h3>
+                        <p class="product-category">${product.category_name}</p>
+                        <div class="product-rating">⭐ ${product.rating_avg}/5 (${product.total_reviews} đánh giá)</div>
+                        <div class="product-price">
+                            <span class="original-price">${original.toLocaleString('vi-VN')}đ</span>
+                            <span class="sale-price">${unit.toLocaleString('vi-VN')}đ</span>
+                        </div>
+                        <a href="product-detail.html?id=${product.product_id}" class="btn btn-small">Xem chi tiết</a>
+                    </div>
+                </div>
+            `;
+                }).join('');
+            }
+        });
+    </script>
+</body>
+</html>

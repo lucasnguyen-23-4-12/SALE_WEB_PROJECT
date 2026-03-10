@@ -12,6 +12,9 @@ class OrderBase(BaseModel):
     payment_method_id: int
     order_date: date
     status: str
+    shipping_address: Optional[str] = None
+    shipping_fee: Optional[float] = 0.0
+    discount_amount: Optional[float] = 0.0
 
 class OrderCreate(BaseModel):
     """Schema tạo order mới - client gửi items trong request"""

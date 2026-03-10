@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán - Tech Store</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <a href="index.html">🏪 Tech Store</a>
+            </div>
+            <ul class="navbar-menu">
+                <li><a href="index.html">Trang chủ</a></li>
+                <li><a href="products.html">Sản phẩm</a></li>
+                <li><a href="customer-login.html">Tài khoản</a></li>
+                <li><a href="cart.html" class="cart-link">🛒 Giỏ hàng <span class="cart-count">0</span></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <h1>Thanh toán</h1>
+        <p>Hoàn tất đơn hàng của bạn</p>
+    </section>
+
+    <!-- Checkout Container -->
+    <div class="checkout-container">
+        <!-- Steps -->
+        <div class="checkout-steps">
+            <div class="step active">
+                <span class="step-number">1</span>
+                <span class="step-title">Thông tin giao hàng</span>
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                <span class="step-title">Phương thức thanh toán</span>
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                <span class="step-title">Xác nhận đơn hàng</span>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <div class="checkout-form">
+            <!-- Step 1: Shipping Info -->
+            <div class="checkout-section active" id="step-1">
+                <h2>1. Thông tin giao hàng</h2>
+                
+                <div class="form-group">
+                    <label>Họ và tên *</label>
+                    <input type="text" id="customer-name" placeholder="Nhập họ và tên" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="customer-email" placeholder="yourmail@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Số điện thoại *</label>
+                    <input type="tel" id="customer-phone" placeholder="0123456789" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Địa chỉ *</label>
+                    <input type="text" id="customer-address" placeholder="Nhập địa chỉ giao hàng" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Thành phố *</label>
+                        <select id="customer-city" required>
+                            <option>Chọn thành phố</option>
+                            <option>Hà Nội</option>
+                            <option>TP. Hồ Chí Minh</option>
+                            <option>Đà Nẵng</option>
+                            <option>Hải Phòng</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quận/Huyện *</label>
+                        <input type="text" id="customer-district" placeholder="Quận/Huyện" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mã bưu chính *</label>
+                        <input type="text" id="customer-zipcode" placeholder="100000" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="delivery-note"> Đơn hàng này là quà tặng
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>Ghi chú (không bắt buộc)</label>
+                    <textarea id="delivery-notes" placeholder="Ghi chú cho người giao hàng..."></textarea>
+                </div>
+
+                <button class="btn btn-primary btn-large" onclick="nextStep(2)">Tiếp tục → Chọn thanh toán</button>
+            </div>
+
+            <!-- Step 2: Payment Method -->
+            <div class="checkout-section" id="step-2">
+                <h2>2. Phương thức thanh toán</h2>
+
+                <div class="payment-methods">
+                    <div class="payment-option">
+                        <input type="radio" name="payment" value="cod" id="payment-cod" checked>
+                        <label for="payment-cod">
+                            <span class="payment-title">💵 Thanh toán khi nhận hàng (COD)</span>
+                            <span class="payment-desc">Không phí, thanh toán trực tiếp cho người giao hàng</span>
+                        </label>
+                    </div>
+
+                    <div class="payment-option">
+                        <input type="radio" name="payment" value="debit" id="payment-debit">
+                        <label for="payment-debit">
+                            <span class="payment-title">💳 Thẻ ghi nợ / Tín dụng</span>
+                            <span class="payment-desc">Thanh toán an toàn qua cổng VNPAY</span>
+                        </label>
+                    </div>
+
+                    <div class="payment-option">
+                        <input type="radio" name="payment" value="bank" id="payment-bank">
+                        <label for="payment-bank">
+                            <span class="payment-title">🏦 Chuyển khoản ngân hàng</span>
+                            <span class="payment-desc">Chuyển tiền vào tài khoản ngân hàng của cửa hàng</span>
+                        </label>
+                    </div>
+
+                    <div class="payment-option">
+                        <input type="radio" name="payment" value="ewallet" id="payment-ewallet">
+                        <label for="payment-ewallet">
+                            <span class="payment-title">📱 Ví điện tử</span>
+                            <span class="payment-desc">Momo, ZaloPay, PayPal,...</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Bank Details (hidden by default) -->
+                <div id="bank-details" style="display: none;">
+                    <h3>Thông tin chuyển khoản</h3>
+                    <p><strong>Ngân hàng:</strong> Vietcombank</p>
+                    <p><strong>Tên tài khoản:</strong> TECH STORE</p>
+                    <p><strong>Số tài khoản:</strong> 1234567890</p>
+                    <p><strong>Nội dung chuyển:</strong> <span id="order-ref">ĐH-001</span></p>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="previousStep(1)">← Quay lại</button>
+                    <button class="btn btn-primary" onclick="nextStep(3)">Tiếp tục → Xác nhận</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Order Summary -->
+            <div class="checkout-section" id="step-3">
+                <h2>3. Xác nhận đơn hàng</h2>
+
+                <div class="order-summary-checkout">
+                    <div class="summary-block">
+                        <h3>Thông tin giao hàng</h3>
+                        <p><strong id="confirm-name">-</strong></p>
+                        <p id="confirm-email">-</p>
+                        <p id="confirm-phone">-</p>
+                        <p id="confirm-address">-</p>
+                    </div>
+
+                    <div class="summary-block">
+                        <h3>Phương thức thanh toán</h3>
+                        <p id="confirm-payment">Thanh toán khi nhận hàng</p>
+                    </div>
+
+                    <div class="summary-block">
+                        <h3>Sản phẩm</h3>
+                        <table class="order-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Giá</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody id="order-items">
+                                <!-- Items will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="summary-block order-total">
+                        <div class="total-row">
+                            <span>Tổng tiền:</span>
+                            <span id="confirm-total">0đ</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Phí vận chuyển:</span>
+                            <span id="confirm-shipping">Miễn phí</span>
+                        </div>
+                        <div class="total-row final">
+                            <span>Thành tiền:</span>
+                            <span id="confirm-final">0đ</span>
+                        </div>
+                    </div>
+
+                    <label style="margin: 20px 0; display: block;">
+                        <input type="checkbox" id="agree-terms" required> Tôi đồng ý với <a href="#">Điều khoản & Điều kiện</a> và <a href="#">Chính sách bảo mật</a>
+                    </label>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="previousStep(2)">← Quay lại</button>
+                    <button class="btn btn-success btn-large" onclick="placeOrder()">✓ Đặt hàng ngay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Giới thiệu</h4>
+                <ul>
+                    <li><a href="#">Về chúng tôi</a></li>
+                    <li><a href="#">Chính sách bảo mật</a></li>
+                    <li><a href="#">Điều khoản dịch vụ</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Hỗ trợ khách hàng</h4>
+                <ul>
+                    <li><a href="#">Liên hệ</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Hướng dẫn mua hàng</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Gửi theo dõi</h4>
+                <ul>
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Twitter</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Liên hệ</h4>
+                <p>Email: support@techstore.com</p>
+                <p>Hot line: 1800-1234</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Tech Store. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        console.log('=== CHECKOUT PAGE LOADED ===');
+        console.log('app object exists?', typeof app !== 'undefined');
+        if (typeof app !== 'undefined') {
+            console.log('app.getCart exists?', typeof app.getCart !== 'undefined');
+        }
+        
+        let currentStep = 1;
+
+        function nextStep(step) {
+            console.log('Attempting to go to step:', step);
+            
+            if (step === 2) {
+                console.log('Validating step 1...');
+                if (!validateStep1()) {
+                    console.log('Step 1 validation failed');
+                    return;
+                }
+                console.log('Step 1 validation passed');
+            }
+            if (step === 3) {
+                console.log('Validating step 2...');
+                if (!validateStep2()) {
+                    console.log('Step 2 validation failed');
+                    return;
+                }
+                console.log('Updating step 3...');
+                updateStep3();
+            }
+
+            document.querySelectorAll('.checkout-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('step-' + step).classList.add('active');
+            document.querySelectorAll('.checkout-steps .step').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.checkout-steps .step')[step - 1].classList.add('active');
+            currentStep = step;
+            console.log('Successfully moved to step:', step);
+            window.scrollTo(0, 0);
+        }
+
+        function previousStep(step) {
+            document.querySelectorAll('.checkout-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('step-' + step).classList.add('active');
+            document.querySelectorAll('.checkout-steps .step').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.checkout-steps .step')[step - 1].classList.add('active');
+            currentStep = step;
+            window.scrollTo(0, 0);
+        }
+
+        function validateStep1() {
+            console.log('=== VALIDATING STEP 1 ===');
+            const name = document.getElementById('customer-name').value.trim();
+            const email = document.getElementById('customer-email').value.trim();
+            const phone = document.getElementById('customer-phone').value.trim();
+            const address = document.getElementById('customer-address').value.trim();
+            const city = document.getElementById('customer-city').value;
+            const district = document.getElementById('customer-district').value.trim();
+            const zipcode = document.getElementById('customer-zipcode').value.trim();
+
+            console.log('Name:', name);
+            console.log('Email:', email);
+            console.log('Phone:', phone);
+            console.log('Address:', address);
+            console.log('City:', city);
+            console.log('District:', district);
+            console.log('Zipcode:', zipcode);
+
+            if (!name) {
+                alert('❌ Vui lòng nhập Họ và tên!');
+                console.log('FAIL: Name is empty');
+                return false;
+            }
+            if (!email) {
+                alert('❌ Vui lòng nhập Email!');
+                console.log('FAIL: Email is empty');
+                return false;
+            }
+            if (!phone) {
+                alert('❌ Vui lòng nhập Số điện thoại!');
+                console.log('FAIL: Phone is empty');
+                return false;
+            }
+            if (!address) {
+                alert('❌ Vui lòng nhập Địa chỉ!');
+                console.log('FAIL: Address is empty');
+                return false;
+            }
+            if (!city || city === 'Chọn thành phố' || city.length === 0) {
+                alert('❌ Vui lòng chọn Thành phố!');
+                console.log('FAIL: City is not selected, value:', city);
+                return false;
+            }
+            if (!district) {
+                alert('❌ Vui lòng nhập Quận/Huyện!');
+                console.log('FAIL: District is empty');
+                return false;
+            }
+            if (!zipcode) {
+                alert('❌ Vui lòng nhập Mã bưu chính!');
+                console.log('FAIL: Zipcode is empty');
+                return false;
+            }
+            console.log('✅ ALL VALIDATIONS PASSED');
+            return true;
+        }
+
+        function validateStep2() {
+            return true;
+        }
+
+        function updateStep3() {
+            try {
+                console.log('=== UPDATING STEP 3 ===');
+                // Update shipping info
+                document.getElementById('confirm-name').textContent = document.getElementById('customer-name').value;
+                document.getElementById('confirm-email').textContent = document.getElementById('customer-email').value;
+                document.getElementById('confirm-phone').textContent = document.getElementById('customer-phone').value;
+                document.getElementById('confirm-address').innerHTML = 
+                    document.getElementById('customer-address').value + '<br>' +
+                    document.getElementById('customer-district').value + ', ' +
+                    document.getElementById('customer-city').value;
+
+                // Update payment method
+                const paymentRadio = document.querySelector('input[name="payment"]:checked');
+                if (!paymentRadio) {
+                    console.log('⚠️ No payment method selected');
+                    return;
+                }
+                const payment = paymentRadio.value;
+                const paymentText = {
+                    'cod': 'Thanh toán khi nhận hàng',
+                    'debit': 'Thẻ ghi nợ / Tín dụng',
+                    'bank': 'Chuyển khoản ngân hàng',
+                    'ewallet': 'Ví điện tử'
+                };
+                document.getElementById('confirm-payment').textContent = paymentText[payment];
+
+                // Update order items
+                const cart = app.getCart();
+                console.log('Cart items:', cart.length);
+                let total = 0;
+                document.getElementById('order-items').innerHTML = cart.map(item => {
+                    const subtotal = item.unit_price * item.quantity;
+                    total += subtotal;
+                    return `
+                        <tr>
+                            <td>${item.product_name}</td>
+                            <td>${item.quantity}</td>
+                            <td>${item.unit_price.toLocaleString('vi-VN')}đ</td>
+                            <td>${subtotal.toLocaleString('vi-VN')}đ</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                const shipping = total > 1000000 ? 0 : 25000;
+                const finalTotal = total + shipping;
+
+                document.getElementById('confirm-total').textContent = total.toLocaleString('vi-VN') + 'đ';
+                document.getElementById('confirm-shipping').textContent = shipping === 0 ? 'Miễn phí' : shipping.toLocaleString('vi-VN') + 'đ';
+                document.getElementById('confirm-final').textContent = finalTotal.toLocaleString('vi-VN') + 'đ';
+                console.log('✅ Step 3 updated successfully');
+            } catch (error) {
+                console.error('❌ ERROR in updateStep3():', error);
+                console.error('Stack:', error.stack);
+            }
+        }
+
+        async function placeOrder() {
+            console.log('placeOrder() called');
+            
+            if (!document.getElementById('agree-terms').checked) {
+                alert('✋ Vui lòng đồng ý với điều khoản và điều kiện!');
+                return;
+            }
+
+            // Build order payload matching backend field names
+            const cartItems = app.getCart().map(item => ({
+                product_id: item.product_id,
+                quantity: item.quantity,
+                price_at_purchase: item.unit_price
+            }));
+
+            console.log('Cart items:', cartItems);
+
+            const shipping = document.getElementById('confirm-shipping').textContent === 'Miễn phí' ? 0 : 25000;
+
+            // Lấy customer_id từ user đã đăng nhập
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const customerId = user.customer_id || null;
+
+            console.log('User info:', user);
+            console.log('Customer ID:', customerId);
+
+            if (!customerId) {
+                alert('⚠️ Vui lòng đăng nhập trước khi đặt hàng!');
+                window.location.href = 'customer-login.html';
+                return;
+            }
+
+            // Tạo payment method trước
+            const paymentMethodData = {
+                mode_name: 'Credit Card',
+                pay_date: null
+            };
+
+            try {
+                console.log('Creating payment method...');
+                const paymentMethod = await app.createPaymentMethod(paymentMethodData);
+                console.log('Payment method created:', paymentMethod);
+                const paymentMethodId = paymentMethod.payment_method_id;
+
+                const orderPayload = {
+                    customer_id: customerId,
+                    payment_method_id: paymentMethodId,
+                    items: cartItems
+                };
+
+                console.log('Order payload:', orderPayload);
+
+                // Submit order to backend
+                await submitOrderToBackend(orderPayload);
+            } catch (error) {
+                console.error('Error in placeOrder:', error);
+                alert('⚠️ Lỗi: ' + error.message);
+            }
+        }
+
+        async function submitOrderToBackend(orderPayload) {
+            try {
+                const response = await app.submitOrder(orderPayload);
+                console.log('Order created:', response);
+                
+                // Clear cart and show success
+                localStorage.removeItem('cart');
+                const orderId = response.order_id || response.id || Math.floor(Math.random() * 1000000);
+                
+                alert('✓ Đặt hàng thành công!\n\nMã đơn hàng: ' + orderId + '\n\nKiểm tra email để nhận xác nhận chi tiết.');
+                window.location.href = 'index.html';
+            } catch (err) {
+                console.error('Failed to submit order:', err);
+                alert('⚠️ Không thể gửi đơn hàng. Sẽ lưu trữ cục bộ.\n\nVui lòng thử lại sau.');
+            }
+        }
+
+        // Toggle bank details visibility
+        document.addEventListener('change', function(e) {
+            if (e.target.name === 'payment') {
+                const bankDetails = document.getElementById('bank-details');
+                if (e.target.value === 'bank') {
+                    bankDetails.style.display = 'block';
+                } else {
+                    bankDetails.style.display = 'none';
+                }
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStep3();
+        });
+    </script>
+</body>
+</html>

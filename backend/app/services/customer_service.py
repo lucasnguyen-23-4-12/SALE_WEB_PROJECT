@@ -51,6 +51,22 @@ def create_customer(db: Session, data: CustomerCreate):
     return new_customer
 
 
+def authenticate_customer(db: Session, email_or_phone: str, password: str):
+    """Xác thực customer bằng email/phone và password"""
+    customer = db.query(Customer).filter(
+        (Customer.customer_email == email_or_phone) |
+        (Customer.phone_number == email_or_phone)
+    ).first()
+
+    if not customer:
+        raise NotFoundException("Customer")
+
+    if customer.password_hash != hash_password(password):
+        raise ValidationException("Invalid password")
+
+    return customer
+
+
 def update_customer(db: Session, customer_id: int, data: CustomerUpdate):
 
     customer = get_customer_by_id(db, customer_id)

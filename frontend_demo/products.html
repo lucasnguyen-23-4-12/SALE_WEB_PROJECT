@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sản phẩm - Tech Store</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <a href="index.html">🏪 Tech Store</a>
+            </div>
+            <ul class="navbar-menu">
+                <li><a href="index.html">Trang chủ</a></li>
+                <li><a href="products.html" class="active">Sản phẩm</a></li>
+                <li><a href="customer-login.html">Tài khoản</a></li>
+                <li><a href="cart.html" class="cart-link">🛒 Giỏ hàng <span class="cart-count">0</span></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <h1>Tất cả sản phẩm</h1>
+        <p>Khám phá bộ sưu tập đầy đủ của chúng tôi</p>
+    </section>
+
+    <!-- Filters & Products -->
+    <div class="products-page">
+        <!-- Sidebar Filters -->
+        <aside class="sidebar">
+            <h3>Bộ lọc</h3>
+            
+            <div class="filter-group">
+                <h4>Danh mục</h4>
+                <label><input type="checkbox" value="smartphones" class="filter-checkbox"> Điện thoại</label>
+                <label><input type="checkbox" value="computers" class="filter-checkbox"> Máy tính</label>
+                <label><input type="checkbox" value="accessories" class="filter-checkbox"> Phụ kiện</label>
+                <label><input type="checkbox" value="wearables" class="filter-checkbox"> Đồng hồ thông minh</label>
+            </div>
+
+            <div class="filter-group">
+                <h4>Giá</h4>
+                <label><input type="radio" name="price" value="0-5" class="filter-price"> Dưới 5 triệu</label>
+                <label><input type="radio" name="price" value="5-10" class="filter-price"> 5-10 triệu</label>
+                <label><input type="radio" name="price" value="10-20" class="filter-price"> 10-20 triệu</label>
+                <label><input type="radio" name="price" value="20+" class="filter-price"> Trên 20 triệu</label>
+            </div>
+
+            <div class="filter-group">
+                <h4>Đánh giá</h4>
+                <label><input type="checkbox" value="5" class="filter-rating"> ⭐⭐⭐⭐⭐ 5 sao</label>
+                <label><input type="checkbox" value="4" class="filter-rating"> ⭐⭐⭐⭐ 4-5 sao</label>
+                <label><input type="checkbox" value="3" class="filter-rating"> ⭐⭐⭐ 3-5 sao</label>
+            </div>
+
+            <button class="btn btn-primary" id="apply-filters" style="width: 100%; margin-top: 20px;">Áp dụng bộ lọc</button>
+            <button class="btn btn-secondary" id="clear-filters" style="width: 100%; margin-top: 10px;">Xóa bộ lọc</button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="products-content">
+            <!-- Sort Options -->
+            <div class="sort-section">
+                <label>Sắp xếp theo:</label>
+                <select id="sort-select">
+                    <option value="default">Mặc định</option>
+                    <option value="price-low">Giá: Thấp → Cao</option>
+                    <option value="price-high">Giá: Cao → Thấp</option>
+                    <option value="rating">Đánh giá cao nhất</option>
+                    <option value="newest">Mới nhất</option>
+                </select>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="products-grid" id="products-grid">
+                <!-- Sản phẩm sẽ được load bởi JavaScript -->
+            </div>
+
+            <!-- No Products Message -->
+            <div id="no-products" style="display: none; text-align: center; padding: 40px;">
+                <p>Không tìm thấy sản phẩm phù hợp. Vui lòng thử lại bộ lọc.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Giới thiệu</h4>
+                <ul>
+                    <li><a href="#">Về chúng tôi</a></li>
+                    <li><a href="#">Chính sách bảo mật</a></li>
+                    <li><a href="#">Điều khoản dịch vụ</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Hỗ trợ khách hàng</h4>
+                <ul>
+                    <li><a href="#">Liên hệ</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Hướng dẫn mua hàng</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Gửi theo dõi</h4>
+                <ul>
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Twitter</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Liên hệ</h4>
+                <p>Email: support@techstore.com</p>
+                <p>Hot line: 1800-1234</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Tech Store. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        let sourceProducts = [...mockProducts]; // All products from backend or mock
+        let filteredProducts = [...mockProducts];
+
+        function renderProducts(products) {
+            const grid = document.getElementById('products-grid');
+            const noProducts = document.getElementById('no-products');
+
+            if (products.length === 0) {
+                grid.innerHTML = '';
+                noProducts.style.display = 'block';
+                return;
+            }
+
+            noProducts.style.display = 'none';
+            grid.innerHTML = products.map(product => {
+                const unit = parseFloat(product.unit_price) || 0;
+                const discount = parseFloat(product.discount_percent) || 0;
+                const original = unit / (1 - discount / 100) || unit;
+                
+                return `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://via.placeholder.com/250x250?text=${encodeURIComponent(product.product_name)}" alt="${product.product_name}">
+                        <span class="product-badge">-${product.discount_percent}%</span>
+                    </div>
+                    <div class="product-info">
+                        <h3>${product.product_name}</h3>
+                        <p class="product-category">${product.category_name}</p>
+                        <div class="product-rating">⭐ ${product.rating_avg}/5 (${product.total_reviews} đánh giá)</div>
+                        <div class="product-price">
+                            <span class="original-price">${original.toLocaleString('vi-VN')}đ</span>
+                            <span class="sale-price">${unit.toLocaleString('vi-VN')}đ</span>
+                        </div>
+                        <a href="product-detail.html?id=${product.product_id}" class="btn btn-small">Xem chi tiết</a>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        // Filter functionality
+        document.getElementById('apply-filters').addEventListener('click', function() {
+            let filtered = [...sourceProducts];
+
+            // Category filter (match by category_name in mock data)
+            const categories = Array.from(document.querySelectorAll('.filter-checkbox:checked')).map(cb => cb.value);
+            if (categories.length > 0) {
+                filtered = filtered.filter(p => categories.includes(p.category_name));
+            }
+
+            // Price filter
+            const priceFilter = document.querySelector('.filter-price:checked');
+            if (priceFilter) {
+                const range = priceFilter.value;
+                filtered = filtered.filter(p => {
+                    const price = p.unit_price / 1000000; // Convert to millions
+                    if (range === '0-5') return price < 5;
+                    if (range === '5-10') return price >= 5 && price < 10;
+                    if (range === '10-20') return price >= 10 && price < 20;
+                    if (range === '20+') return price >= 20;
+                    return true;
+                });
+            }
+
+            // Rating filter
+            const ratings = Array.from(document.querySelectorAll('.filter-rating:checked')).map(rb => parseFloat(rb.value));
+            if (ratings.length > 0) {
+                filtered = filtered.filter(p => ratings.some(r => p.rating_avg >= r));
+            }
+
+            filteredProducts = filtered;
+            applySort();
+        });
+
+        document.getElementById('clear-filters').addEventListener('click', function() {
+            document.querySelectorAll('.filter-checkbox, .filter-price, .filter-rating').forEach(el => el.checked = false);
+            filteredProducts = [...sourceProducts];
+            renderProducts(filteredProducts);
+        });
+
+        document.getElementById('sort-select').addEventListener('change', applySort);
+
+        function applySort() {
+            const sortValue = document.getElementById('sort-select').value;
+            let sorted = [...filteredProducts];
+
+            switch(sortValue) {
+                case 'price-low':
+                    sorted.sort((a, b) => a.unit_price - b.unit_price);
+                    break;
+                case 'price-high':
+                    sorted.sort((a, b) => b.unit_price - a.unit_price);
+                    break;
+                case 'rating':
+                    sorted.sort((a, b) => b.rating_avg - a.rating_avg);
+                    break;
+                case 'newest':
+                    sorted.sort((a, b) => b.product_id - a.product_id);
+                    break;
+            }
+
+            renderProducts(sorted);
+        }
+
+        // Initial render - load from backend
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const products = await app.loadProductList(0, 100);
+                sourceProducts = products;
+                filteredProducts = [...sourceProducts];
+                renderProducts(filteredProducts);
+            } catch (err) {
+                console.warn('Could not load products from server, using mock', err);
+                sourceProducts = mockProducts;
+                filteredProducts = [...sourceProducts];
+                renderProducts(filteredProducts);
+            }
+        });
+    </script>
+</body>
+</html>

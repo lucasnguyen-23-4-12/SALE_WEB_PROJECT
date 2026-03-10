@@ -11,6 +11,11 @@ class Customer(Base):
     phone_number = Column("PhoneNumber", String(20))
     password_hash = Column("Password_Hash", String(255), nullable=False)
     address = Column("Address", String(500))
-    created_at = Column("Creat_at", Date)
+    created_at = Column("CreatedAt", Date)
+    updated_at = Column("UpdatedAt", Date)
+    is_active = Column("IsActive", Integer, nullable=False, default=1)
 
     orders = relationship("Order", back_populates="customer", cascade="all, delete")
+    reviews = relationship("Review", back_populates="customer", cascade="all, delete")
+    addresses = relationship("Address", back_populates="customer", cascade="all, delete")
+    wishlist_items = relationship("Wishlist", back_populates="customer", cascade="all, delete")
