@@ -1,9 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import date
 
 class PaymentMethodBase(BaseModel):
-    mode_name: str
+    mode_name: str = Field(min_length=1, max_length=100)
     pay_date: Optional[date] = None
 
 class PaymentMethodCreate(PaymentMethodBase):

@@ -1,12 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
 
 class ReviewBase(BaseModel):
-    product_id: int
-    customer_id: int
-    rating: int
-    comment: Optional[str] = None
+    product_id: int = Field(ge=1)
+    customer_id: int = Field(ge=1)
+    rating: int = Field(ge=1, le=5)
+    comment: Optional[str] = Field(default=None, max_length=1000)
 
 class ReviewCreate(ReviewBase):
     pass
