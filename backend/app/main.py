@@ -1,4 +1,6 @@
 import logging
+import time
+import uuid
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
@@ -9,6 +11,7 @@ from sqlalchemy import text
 
 from app.database import engine, Base
 from app.models import *
+from app.core.logging_config import configure_json_logging, request_id_ctx
 from app.routers import (
     customer_router,
     product_router,
@@ -22,6 +25,7 @@ from app.routers import (
 from Admin import admin_router
 
 
+configure_json_logging(service_name="sale_web_backend")
 
 app = FastAPI(
     title="E-Commerce API",
@@ -55,13 +59,37 @@ app.include_router(admin_router.router)
 logger = logging.getLogger("app")
 
 
+@app.middleware("http")
+async def request_logging_middleware(request: Request, call_next):
+    request_id = request.headers.get("X-Request-Id") or uuid.uuid4().hex
+    token = request_id_ctx.set(request_id)
+    start = time.perf_counter()
+    try:
+        response = await call_next(request)
+    finally:
+        duration_ms = round((time.perf_counter() - start) * 1000, 2)
+
+    response.headers["X-Request-Id"] = request_id
+    logger.info(
+        "request",
+        extra={
+            "method": request.method,
+            "path": request.url.path,
+            "status_code": response.status_code,
+            "duration_ms": duration_ms,
+        },
+    )
+    request_id_ctx.reset(token)
+    return response
+
+
 def _error_payload(
     *,
     code: str,
     message: str,
     details=None,
 ):
-    payload = {"error": {"code": code, "message": message}}
+    payload = {"error": {"code": code, "message": message, "request_id": request_id_ctx.get()}}
     if details is not None:
         payload["error"]["details"] = details
     return payload
@@ -69,6 +97,10 @@ def _error_payload(
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
+    logger.warning(
+        "http_error",
+        extra={"status_code": exc.status_code, "detail": str(exc.detail), "path": request.url.path},
+    )
     return JSONResponse(
         status_code=exc.status_code,
         content={
@@ -80,6 +112,10 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 @app.exception_handler(RequestValidationError)
 async def request_validation_exception_handler(request: Request, exc: RequestValidationError):
+    logger.warning(
+        "validation_error",
+        extra={"status_code": 422, "path": request.url.path, "errors": exc.errors()},
+    )
     return JSONResponse(
         status_code=422,
         content={
@@ -91,6 +127,10 @@ async def request_validation_exception_handler(request: Request, exc: RequestVal
 
 @app.exception_handler(ValidationError)
 async def pydantic_validation_exception_handler(request: Request, exc: ValidationError):
+    logger.warning(
+        "validation_error",
+        extra={"status_code": 422, "path": request.url.path, "errors": exc.errors()},
+    )
     return JSONResponse(
         status_code=422,
         content={
