@@ -13,7 +13,10 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 SECRET_KEY = settings.SECRET_KEY
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/customers/login")
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/customers/token",
+    scheme_name="CustomerOAuth2PasswordBearer",
+)
 
 
 def create_customer_access_token(customer_id: str) -> str:

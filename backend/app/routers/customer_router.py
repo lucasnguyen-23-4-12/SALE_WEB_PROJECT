@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -42,6 +43,21 @@ def login_customer(
 ):
     customer = customer_service.authenticate_customer(
         db, payload.email_or_phone, payload.password
+    )
+    token = create_customer_access_token(customer.customer_id)
+    return TokenResponse(access_token=token)
+
+
+@router.post(
+    "/token",
+    response_model=TokenResponse,
+)
+def token_customer(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
+):
+    customer = customer_service.authenticate_customer(
+        db, form_data.username, form_data.password
     )
     token = create_customer_access_token(customer.customer_id)
     return TokenResponse(access_token=token)

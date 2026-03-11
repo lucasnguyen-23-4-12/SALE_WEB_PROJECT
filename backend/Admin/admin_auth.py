@@ -9,7 +9,10 @@ from app.config import settings
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 SECRET_KEY = settings.SECRET_KEY
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/admin/login")
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/admin/login",
+    scheme_name="AdminOAuth2PasswordBearer",
+)
 
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin123"
