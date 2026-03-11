@@ -4,10 +4,24 @@ from app.schemas.customer import CustomerCreate, CustomerUpdate
 from app.services.exceptions import *
 from datetime import datetime
 import hashlib
+from passlib.context import CryptContext
+
+
+_pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def _sha256(password: str) -> str:
+    return hashlib.sha256(password.encode()).hexdigest()
 
 
 def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode()).hexdigest()
+    return _pwd_context.hash(password)
+
+
+def verify_password(password: str, stored_hash: str) -> bool:
+    if stored_hash.startswith("$2"):
+        return _pwd_context.verify(password, stored_hash)
+    return stored_hash == _sha256(password)
 
 
 def get_customer_by_id(db: Session, customer_id: int):
@@ -61,8 +75,13 @@ def authenticate_customer(db: Session, email_or_phone: str, password: str):
     if not customer:
         raise NotFoundException("Customer")
 
-    if customer.password_hash != hash_password(password):
+    if not verify_password(password, customer.password_hash):
         raise ValidationException("Invalid password")
+
+    if not customer.password_hash.startswith("$2"):
+        customer.password_hash = hash_password(password)
+        db.commit()
+        db.refresh(customer)
 
     return customer
 

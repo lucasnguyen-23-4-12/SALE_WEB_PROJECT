@@ -6,6 +6,7 @@ alembic
 python-dotenv 
 pydantic 
 passlib[bcrypt] 
+bcrypt==4.0.1
 python-jose
 email-validator
 python-multipart

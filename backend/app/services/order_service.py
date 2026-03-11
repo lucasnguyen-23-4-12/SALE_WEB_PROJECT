@@ -26,6 +26,17 @@ def get_all_orders(db: Session, skip: int = 0, limit: int = 10):
     return db.query(Order).offset(skip).limit(limit).all()
 
 
+def get_orders_by_customer(db: Session, customer_id: int, skip: int = 0, limit: int = 10):
+    """Lấy orders theo customer (có pagination)"""
+    return (
+        db.query(Order)
+        .filter(Order.customer_id == customer_id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+
 def create_order(db: Session, payload):
     """Tạo order mới - payload là OrderCreate schema"""
     customer_id = payload.customer_id

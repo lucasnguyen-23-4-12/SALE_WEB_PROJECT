@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -8,8 +8,11 @@ from app.schemas.customer import (
     CustomerResponse,
     CustomerLogin
 )
+from app.schemas.auth import TokenResponse
 from app.services import customer_service
+from app.core.customer_auth import create_customer_access_token, get_current_customer
 from app.core.dependencies import get_db
+from Admin.admin_auth import get_current_admin
 
 router = APIRouter(
     prefix="/customers",
@@ -31,15 +34,17 @@ def create_customer(
 
 @router.post(
     "/login",
-    response_model=CustomerResponse
+    response_model=TokenResponse
 )
 def login_customer(
     payload: CustomerLogin,
     db: Session = Depends(get_db)
 ):
-    return customer_service.authenticate_customer(
+    customer = customer_service.authenticate_customer(
         db, payload.email_or_phone, payload.password
     )
+    token = create_customer_access_token(customer.customer_id)
+    return TokenResponse(access_token=token)
 
 
 @router.get(
@@ -49,7 +54,8 @@ def login_customer(
 def get_customers(
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: str = Depends(get_current_admin),
 ):
     return customer_service.get_all_customers(db, skip=skip, limit=limit)
 
@@ -60,8 +66,11 @@ def get_customers(
 )
 def get_customer(
     customer_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_customer=Depends(get_current_customer),
 ):
+    if current_customer.customer_id != customer_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     return customer_service.get_customer_by_id(db, customer_id)
 
 
@@ -72,8 +81,11 @@ def get_customer(
 def update_customer(
     customer_id: int,
     payload: CustomerUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_customer=Depends(get_current_customer),
 ):
+    if current_customer.customer_id != customer_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     return customer_service.update_customer(db, customer_id, payload)
 
 
@@ -83,6 +95,9 @@ def update_customer(
 )
 def delete_customer(
     customer_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_customer=Depends(get_current_customer),
 ):
+    if current_customer.customer_id != customer_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     customer_service.delete_customer(db, customer_id)
