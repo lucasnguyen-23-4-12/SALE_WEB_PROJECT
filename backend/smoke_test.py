@@ -24,10 +24,26 @@ def run() -> None:
     test_db = _json(client.get("/test-db"))
     assert test_db.get("result") == 1
 
-    cat = _json(client.post("/categories/", json={"category_name": f"SmokeCat {int(time.time())}"}))
+    admin_token_resp = _json(
+        client.post(
+            "/admin/login",
+            data={"username": "admin", "password": "admin123"},
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+    )
+    admin_token = admin_token_resp["access_token"]
+    admin_headers = {"Authorization": f"Bearer {admin_token}"}
+
+    cat = _json(
+        client.post(
+            "/categories/",
+            json={"category_name": f"SmokeCat {int(time.time())}"},
+            headers=admin_headers,
+        )
+    )
     category_id = cat["category_id"]
 
-    pm = _json(client.post("/payment-methods/", json={"mode_name": "COD"}))
+    pm = _json(client.post("/payment-methods/", json={"mode_name": "COD"}, headers=admin_headers))
     payment_method_id = pm["payment_method_id"]
 
     cust = _json(
@@ -62,6 +78,7 @@ def run() -> None:
                 "category_id": category_id,
                 "stock_quantity": 3,
             },
+            headers=admin_headers,
         )
     )
     product_id = prod["product_id"]
@@ -86,24 +103,14 @@ def run() -> None:
     my_orders = _json(client.get("/orders/?skip=0&limit=10", headers=customer_headers))
     assert isinstance(my_orders, list)
 
-    token_resp = _json(
-        client.post(
-            "/admin/login",
-            data={"username": "admin", "password": "admin123"},
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-        )
-    )
-    token = token_resp["access_token"]
-    headers = {"Authorization": f"Bearer {token}"}
-
-    admin_prod = _json(client.get(f"/admin/products/{product_id}", headers=headers))
+    admin_prod = _json(client.get(f"/admin/products/{product_id}", headers=admin_headers))
     assert admin_prod["product_id"] == product_id
 
     patched = _json(
         client.patch(
             f"/admin/orders/{order_id}/status",
             json={"status": "Shipped"},
-            headers=headers,
+            headers=admin_headers,
         )
     )
     assert patched["order_id"] == order_id

@@ -9,6 +9,7 @@ from app.schemas.product import (
 )
 from app.services import product_service
 from app.core.dependencies import get_db
+from Admin.admin_auth import get_current_admin
 
 router = APIRouter(
     prefix="/products",
@@ -23,7 +24,8 @@ router = APIRouter(
 )
 def create_product(
     payload: ProductCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: str = Depends(get_current_admin),
 ):
     return product_service.create_product(db, payload)
 
@@ -58,7 +60,8 @@ def get_product(
 def update_product(
     product_id: str,
     payload: ProductUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: str = Depends(get_current_admin),
 ):
     return product_service.update_product(db, product_id, payload)
 
@@ -69,6 +72,7 @@ def update_product(
 )
 def delete_product(
     product_id: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: str = Depends(get_current_admin),
 ):
     product_service.delete_product(db, product_id)

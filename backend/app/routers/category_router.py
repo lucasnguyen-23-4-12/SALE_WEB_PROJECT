@@ -9,6 +9,7 @@ from app.schemas.category import (
 )
 from app.services import category_service
 from app.core.dependencies import get_db
+from Admin.admin_auth import get_current_admin
 
 router = APIRouter(
     prefix="/categories",
@@ -23,7 +24,8 @@ router = APIRouter(
 )
 def create_category(
     payload: CategoryCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: str = Depends(get_current_admin),
 ):
     return category_service.create_category(db, payload)
 
@@ -58,7 +60,8 @@ def get_category(
 def update_category(
     category_id: str,
     payload: CategoryUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: str = Depends(get_current_admin),
 ):
     return category_service.update_category(db, category_id, payload)
 
@@ -69,6 +72,7 @@ def update_category(
 )
 def delete_category(
     category_id: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: str = Depends(get_current_admin),
 ):
     category_service.delete_category(db, category_id)

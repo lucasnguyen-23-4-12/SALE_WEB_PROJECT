@@ -9,6 +9,7 @@ from app.schemas.payment_method import (
 )
 from app.services import payment_service
 from app.core.dependencies import get_db
+from Admin.admin_auth import get_current_admin
 
 router = APIRouter(
     prefix="/payment-methods",
@@ -23,7 +24,8 @@ router = APIRouter(
 )
 def create_payment_method(
     payload: PaymentMethodCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: str = Depends(get_current_admin),
 ):
     return payment_service.create_payment_method(db, payload)
 
@@ -58,7 +60,8 @@ def get_payment_method(
 def update_payment_method(
     payment_method_id: str,
     payload: PaymentMethodUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: str = Depends(get_current_admin),
 ):
     return payment_service.update_payment_method(db, payment_method_id, payload)
 
@@ -69,6 +72,7 @@ def update_payment_method(
 )
 def delete_payment_method(
     payment_method_id: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: str = Depends(get_current_admin),
 ):
     payment_service.delete_payment_method(db, payment_method_id)
