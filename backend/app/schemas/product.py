@@ -10,7 +10,7 @@ class ProductBase(BaseModel):
     category_id: int
     discount_percent: Optional[int] = 0
     stock_quantity: Optional[int] = 0
-    rating_avg: Optional[Decimal] = 0
+    rating_avg: Optional[Decimal] = Decimal("0")
     total_reviews: Optional[int] = 0
 
 class ProductCreate(ProductBase):

@@ -1,30 +1,15 @@
-from typing import Generator
-
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from Admin.admin_auth import authenticate_admin, create_access_token, get_current_admin
-from Admin.admin_schema import (
-    AdminLoginResponse,
-    OrderResponse,
-    OrderStatusUpdate,
-    ProductCreate,
-    ProductResponse,
-    ProductUpdate,
-)
+from Admin.admin_schema import AdminLoginResponse
 from Admin import admin_service
-from app.database import SessionLocal
+from app.core.dependencies import get_db
+from app.schemas.order import OrderResponse, OrderUpdate
+from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
-
-
-def get_db() -> Generator[Session, None, None]:
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.post("/login", response_model=AdminLoginResponse)
@@ -45,18 +30,31 @@ def admin_login(
 
 @router.get("/products", response_model=list[ProductResponse])
 def get_products(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db),
     admin: str = Depends(get_current_admin),
 ):
-    return admin_service.get_products(db)
+    return admin_service.get_products(db, skip=skip, limit=limit)
+
+
+@router.get("/products/{product_id}", response_model=ProductResponse)
+def get_product(
+    product_id: int,
+    db: Session = Depends(get_db),
+    admin: str = Depends(get_current_admin),
+):
+    return admin_service.get_product_by_id(db, product_id)
 
 
 @router.get("/orders", response_model=list[OrderResponse])
 def get_orders(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db),
     admin: str = Depends(get_current_admin),
 ):
-    return admin_service.get_orders(db)
+    return admin_service.get_orders(db, skip=skip, limit=limit)
 
 
 @router.get("/orders/{order_id}", response_model=OrderResponse)
@@ -65,29 +63,17 @@ def get_order(
     db: Session = Depends(get_db),
     admin: str = Depends(get_current_admin),
 ):
-    order = admin_service.get_order_by_id(db, order_id)
-    if not order:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Order not found",
-        )
-    return order
+    return admin_service.get_order_by_id(db, order_id)
 
 
 @router.patch("/orders/{order_id}/status", response_model=OrderResponse)
 def update_order_status(
     order_id: int,
-    payload: OrderStatusUpdate,
+    payload: OrderUpdate,
     db: Session = Depends(get_db),
     admin: str = Depends(get_current_admin),
 ):
-    updated_order = admin_service.update_order_status(db, order_id, payload.status)
-    if not updated_order:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Order not found",
-        )
-    return updated_order
+    return admin_service.update_order_status(db, order_id, payload)
 
 
 @router.post(
@@ -110,13 +96,7 @@ def update_product(
     db: Session = Depends(get_db),
     admin: str = Depends(get_current_admin),
 ):
-    updated_product = admin_service.update_product(db, product_id, payload)
-    if not updated_product:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Product not found",
-        )
-    return updated_product
+    return admin_service.update_product(db, product_id, payload)
 
 
 @router.delete(
@@ -128,10 +108,5 @@ def delete_product(
     db: Session = Depends(get_db),
     admin: str = Depends(get_current_admin),
 ):
-    deleted = admin_service.delete_product(db, product_id)
-    if not deleted:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Product not found",
-        )
+    admin_service.delete_product(db, product_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
