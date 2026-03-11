@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+
 from app.database import engine, Base
 from app.models import *
 from app.routers import (
@@ -12,6 +14,7 @@ from app.routers import (
     address_router,
     wishlist_router
 )
+from Admin import admin_router
 
 
 
@@ -41,10 +44,13 @@ app.include_router(payment_router.router)
 app.include_router(review_router.router)
 app.include_router(address_router.router)
 app.include_router(wishlist_router.router)
+app.include_router(admin_router.router)
+
+
 @app.get("/")
 def root():
     return {"message": "Backend is running 🚀"}
-from sqlalchemy import text
+
 
 @app.get("/test-db")
 def test_db():
