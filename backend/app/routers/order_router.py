@@ -49,7 +49,7 @@ def get_orders(
     response_model=OrderResponse
 )
 def get_order(
-    order_id: int,
+    order_id: str,
     db: Session = Depends(get_db),
     current_customer=Depends(get_current_customer),
 ):
@@ -64,7 +64,7 @@ def get_order(
     status_code=status.HTTP_204_NO_CONTENT
 )
 def delete_order(
-    order_id: int,
+    order_id: str,
     db: Session = Depends(get_db),
     current_customer=Depends(get_current_customer),
 ):

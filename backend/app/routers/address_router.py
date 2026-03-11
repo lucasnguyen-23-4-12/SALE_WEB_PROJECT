@@ -24,7 +24,7 @@ def create_address(
 
 @router.get("/customer/{customer_id}", response_model=List[AddressResponse])
 def get_addresses(
-    customer_id: int,
+    customer_id: str,
     db: Session = Depends(get_db),
     current_customer=Depends(get_current_customer),
 ):
@@ -34,7 +34,7 @@ def get_addresses(
 
 @router.delete("/{address_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_address(
-    address_id: int,
+    address_id: str,
     db: Session = Depends(get_db),
     current_customer=Depends(get_current_customer),
 ):

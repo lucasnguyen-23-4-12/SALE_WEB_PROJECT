@@ -24,7 +24,7 @@ def add_to_wishlist(
 
 @router.get("/customer/{customer_id}", response_model=List[WishlistResponse])
 def get_wishlist(
-    customer_id: int,
+    customer_id: str,
     db: Session = Depends(get_db),
     current_customer=Depends(get_current_customer),
 ):
@@ -34,7 +34,7 @@ def get_wishlist(
 
 @router.delete("/{wishlist_id}", status_code=status.HTTP_204_NO_CONTENT)
 def remove_item(
-    wishlist_id: int,
+    wishlist_id: str,
     db: Session = Depends(get_db),
     current_customer=Depends(get_current_customer),
 ):

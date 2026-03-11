@@ -9,7 +9,7 @@ from app.services.exceptions import *
 from datetime import datetime
 
 
-def get_order_by_id(db: Session, order_id: int):
+def get_order_by_id(db: Session, order_id: str):
     """Lấy order theo ID"""
     order = db.query(Order).filter(
         Order.order_id == order_id
@@ -26,7 +26,7 @@ def get_all_orders(db: Session, skip: int = 0, limit: int = 10):
     return db.query(Order).offset(skip).limit(limit).all()
 
 
-def get_orders_by_customer(db: Session, customer_id: int, skip: int = 0, limit: int = 10):
+def get_orders_by_customer(db: Session, customer_id: str, skip: int = 0, limit: int = 10):
     """Lấy orders theo customer (có pagination)"""
     return (
         db.query(Order)
@@ -118,7 +118,7 @@ def create_order(db: Session, payload):
         raise BusinessLogicException("Database transaction failed")
 
 
-def delete_order(db: Session, order_id: int):
+def delete_order(db: Session, order_id: str):
     """Xóa order"""
     order = get_order_by_id(db, order_id)
 

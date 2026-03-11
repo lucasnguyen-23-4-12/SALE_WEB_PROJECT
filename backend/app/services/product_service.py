@@ -5,7 +5,7 @@ from app.schemas.product import ProductCreate, ProductUpdate
 from app.services.exceptions import *
 
 
-def get_product_by_id(db: Session, product_id: int):
+def get_product_by_id(db: Session, product_id: str):
 
     product = db.query(Product).filter(
         Product.product_id == product_id
@@ -40,7 +40,7 @@ def create_product(db: Session, data: ProductCreate):
     return new_product
 
 
-def update_product(db: Session, product_id: int, data: ProductUpdate):
+def update_product(db: Session, product_id: str, data: ProductUpdate):
     """Cập nhật product"""
     product = get_product_by_id(db, product_id)
 
@@ -55,7 +55,7 @@ def update_product(db: Session, product_id: int, data: ProductUpdate):
     return product
 
 
-def delete_product(db: Session, product_id: int):
+def delete_product(db: Session, product_id: str):
 
     product = get_product_by_id(db, product_id)
 

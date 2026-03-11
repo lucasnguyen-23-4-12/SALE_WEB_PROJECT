@@ -14,7 +14,7 @@ class PaymentMethodUpdate(BaseModel):
     pay_date: Optional[date] = None
 
 class PaymentMethodResponse(PaymentMethodBase):
-    payment_method_id: int
+    payment_method_id: str
 
     model_config = {
         "from_attributes": True

@@ -45,7 +45,7 @@ def get_payment_methods(
     response_model=PaymentMethodResponse
 )
 def get_payment_method(
-    payment_method_id: int,
+    payment_method_id: str,
     db: Session = Depends(get_db)
 ):
     return payment_service.get_payment_method_by_id(db, payment_method_id)
@@ -56,7 +56,7 @@ def get_payment_method(
     response_model=PaymentMethodResponse
 )
 def update_payment_method(
-    payment_method_id: int,
+    payment_method_id: str,
     payload: PaymentMethodUpdate,
     db: Session = Depends(get_db)
 ):
@@ -68,7 +68,7 @@ def update_payment_method(
     status_code=status.HTTP_204_NO_CONTENT
 )
 def delete_payment_method(
-    payment_method_id: int,
+    payment_method_id: str,
     db: Session = Depends(get_db)
 ):
     payment_service.delete_payment_method(db, payment_method_id)

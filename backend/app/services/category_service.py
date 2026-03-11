@@ -4,7 +4,7 @@ from app.schemas.category import CategoryCreate, CategoryUpdate
 from app.services.exceptions import *
 
 
-def get_category_by_id(db: Session, category_id: int):
+def get_category_by_id(db: Session, category_id: str):
     """Lấy category theo ID"""
     category = db.query(Category).filter(
         Category.category_id == category_id
@@ -32,7 +32,7 @@ def create_category(db: Session, data: CategoryCreate):
     return new_category
 
 
-def update_category(db: Session, category_id: int, data: CategoryUpdate):
+def update_category(db: Session, category_id: str, data: CategoryUpdate):
     """Cập nhật category"""
     category = get_category_by_id(db, category_id)
 
@@ -47,7 +47,7 @@ def update_category(db: Session, category_id: int, data: CategoryUpdate):
     return category
 
 
-def delete_category(db: Session, category_id: int):
+def delete_category(db: Session, category_id: str):
     """Xóa category"""
     category = get_category_by_id(db, category_id)
 

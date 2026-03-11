@@ -45,7 +45,7 @@ def get_categories(
     response_model=CategoryResponse
 )
 def get_category(
-    category_id: int,
+    category_id: str,
     db: Session = Depends(get_db)
 ):
     return category_service.get_category_by_id(db, category_id)
@@ -56,7 +56,7 @@ def get_category(
     response_model=CategoryResponse
 )
 def update_category(
-    category_id: int,
+    category_id: str,
     payload: CategoryUpdate,
     db: Session = Depends(get_db)
 ):
@@ -68,7 +68,7 @@ def update_category(
     status_code=status.HTTP_204_NO_CONTENT
 )
 def delete_category(
-    category_id: int,
+    category_id: str,
     db: Session = Depends(get_db)
 ):
     category_service.delete_category(db, category_id)

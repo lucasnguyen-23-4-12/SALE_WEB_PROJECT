@@ -45,7 +45,7 @@ def get_products(
     response_model=ProductResponse
 )
 def get_product(
-    product_id: int,
+    product_id: str,
     db: Session = Depends(get_db)
 ):
     return product_service.get_product_by_id(db, product_id)
@@ -56,7 +56,7 @@ def get_product(
     response_model=ProductResponse
 )
 def update_product(
-    product_id: int,
+    product_id: str,
     payload: ProductUpdate,
     db: Session = Depends(get_db)
 ):
@@ -68,7 +68,7 @@ def update_product(
     status_code=status.HTTP_204_NO_CONTENT
 )
 def delete_product(
-    product_id: int,
+    product_id: str,
     db: Session = Depends(get_db)
 ):
     product_service.delete_product(db, product_id)

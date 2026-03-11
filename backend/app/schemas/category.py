@@ -13,7 +13,7 @@ class CategoryUpdate(BaseModel):
     subcategory: Optional[str] = None
 
 class CategoryResponse(CategoryBase):
-    category_id: int
+    category_id: str
 
     model_config = {
         "from_attributes": True

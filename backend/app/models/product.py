@@ -1,12 +1,13 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL
+from sqlalchemy.schema import FetchedValue
 from sqlalchemy.orm import relationship
 from app.database import Base
 
 class Product(Base):
     __tablename__ = "products"
 
-    product_id = Column("ProductID", Integer, primary_key=True, index=True)
-    category_id = Column("Category", Integer, ForeignKey("categories.CategoryID"), nullable=False)
+    product_id = Column("ProductID", String(50), primary_key=True, index=True, server_default=FetchedValue())
+    category_id = Column("Category", String(50), ForeignKey("categories.CategoryID"), nullable=False)
     product_name = Column("ProductName", String(255), nullable=False)
     description = Column("Description", String(1000))
     image_url = Column("Image_url", String(500))

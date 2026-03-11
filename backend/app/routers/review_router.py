@@ -23,12 +23,12 @@ def create_review(
     return review_service.create_review(db, payload)
 
 @router.get("/product/{product_id}", response_model=List[ReviewResponse])
-def reviews_by_product(product_id: int, db: Session = Depends(get_db)):
+def reviews_by_product(product_id: str, db: Session = Depends(get_db)):
     return review_service.get_reviews_by_product(db, product_id)
 
 @router.get("/customer/{customer_id}", response_model=List[ReviewResponse])
 def reviews_by_customer(
-    customer_id: int,
+    customer_id: str,
     db: Session = Depends(get_db),
     current_customer=Depends(get_current_customer),
 ):

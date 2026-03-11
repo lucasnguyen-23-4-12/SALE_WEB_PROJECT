@@ -12,18 +12,18 @@ def add_item(db: Session, data: WishlistCreate):
     return item
 
 
-def get_by_customer(db: Session, customer_id: int):
+def get_by_customer(db: Session, customer_id: str):
     return db.query(Wishlist).filter(Wishlist.customer_id == customer_id).all()
 
 
-def get_item(db: Session, wishlist_id: int):
+def get_item(db: Session, wishlist_id: str):
     item = db.query(Wishlist).filter(Wishlist.wishlist_id == wishlist_id).first()
     if not item:
         raise NotFoundException("Wishlist item")
     return item
 
 
-def remove_item(db: Session, wishlist_id: int):
+def remove_item(db: Session, wishlist_id: str):
     item = get_item(db, wishlist_id)
     db.delete(item)
     db.commit()

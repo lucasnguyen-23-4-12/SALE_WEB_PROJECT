@@ -1,13 +1,14 @@
-from sqlalchemy import Column, Integer, String, Date, ForeignKey, DECIMAL
+from sqlalchemy import Column, String, Date, ForeignKey, DECIMAL
+from sqlalchemy.schema import FetchedValue
 from sqlalchemy.orm import relationship
 from app.database import Base
 
 class Order(Base):
     __tablename__ = "orders"
 
-    order_id = Column("OrderID", Integer, primary_key=True, index=True)
-    customer_id = Column("CustomerID", Integer, ForeignKey("customers.CustomerID"), nullable=False)
-    payment_method_id = Column("PaymentMethodID", Integer, ForeignKey("paymentmethods.PaymentMethodID"), nullable=False)
+    order_id = Column("OrderID", String(50), primary_key=True, index=True, server_default=FetchedValue())
+    customer_id = Column("CustomerID", String(50), ForeignKey("customers.CustomerID"), nullable=False)
+    payment_method_id = Column("PaymentMethodID", String(50), ForeignKey("paymentmethods.PaymentMethodID"), nullable=False)
     order_date = Column("OrderDate", Date, nullable=False)
     status = Column("Status", String(50), nullable=False)
     shipping_address = Column("ShippingAddress", String(500))

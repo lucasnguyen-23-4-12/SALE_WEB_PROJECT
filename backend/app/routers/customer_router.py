@@ -65,7 +65,7 @@ def get_customers(
     response_model=CustomerResponse
 )
 def get_customer(
-    customer_id: int,
+    customer_id: str,
     db: Session = Depends(get_db),
     current_customer=Depends(get_current_customer),
 ):
@@ -79,7 +79,7 @@ def get_customer(
     response_model=CustomerResponse
 )
 def update_customer(
-    customer_id: int,
+    customer_id: str,
     payload: CustomerUpdate,
     db: Session = Depends(get_db),
     current_customer=Depends(get_current_customer),
@@ -94,7 +94,7 @@ def update_customer(
     status_code=status.HTTP_204_NO_CONTENT
 )
 def delete_customer(
-    customer_id: int,
+    customer_id: str,
     db: Session = Depends(get_db),
     current_customer=Depends(get_current_customer),
 ):

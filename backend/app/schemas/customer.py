@@ -26,7 +26,7 @@ class CustomerUpdate(BaseModel):
 
 # Response
 class CustomerResponse(CustomerBase):
-    customer_id: int
+    customer_id: str
     created_at: Optional[date]
     updated_at: Optional[date]
     is_active: Optional[int]

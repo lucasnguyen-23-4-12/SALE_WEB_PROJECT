@@ -4,7 +4,7 @@ from app.schemas.payment_method import PaymentMethodCreate, PaymentMethodUpdate
 from app.services.exceptions import *
 
 
-def get_payment_method_by_id(db: Session, payment_method_id: int):
+def get_payment_method_by_id(db: Session, payment_method_id: str):
     """Lấy payment method theo ID"""
     payment_method = db.query(PaymentMethod).filter(
         PaymentMethod.payment_method_id == payment_method_id
@@ -32,7 +32,7 @@ def create_payment_method(db: Session, data: PaymentMethodCreate):
     return new_payment_method
 
 
-def update_payment_method(db: Session, payment_method_id: int, data: PaymentMethodUpdate):
+def update_payment_method(db: Session, payment_method_id: str, data: PaymentMethodUpdate):
     """Cập nhật payment method"""
     payment_method = get_payment_method_by_id(db, payment_method_id)
 
@@ -47,7 +47,7 @@ def update_payment_method(db: Session, payment_method_id: int, data: PaymentMeth
     return payment_method
 
 
-def delete_payment_method(db: Session, payment_method_id: int):
+def delete_payment_method(db: Session, payment_method_id: str):
     """Xóa payment method"""
     payment_method = get_payment_method_by_id(db, payment_method_id)
 

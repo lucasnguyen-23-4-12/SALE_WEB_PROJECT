@@ -40,7 +40,7 @@ def get_products(
 
 @router.get("/products/{product_id}", response_model=ProductResponse)
 def get_product(
-    product_id: int,
+    product_id: str,
     db: Session = Depends(get_db),
     admin: str = Depends(get_current_admin),
 ):
@@ -59,7 +59,7 @@ def get_orders(
 
 @router.get("/orders/{order_id}", response_model=OrderResponse)
 def get_order(
-    order_id: int,
+    order_id: str,
     db: Session = Depends(get_db),
     admin: str = Depends(get_current_admin),
 ):
@@ -68,7 +68,7 @@ def get_order(
 
 @router.patch("/orders/{order_id}/status", response_model=OrderResponse)
 def update_order_status(
-    order_id: int,
+    order_id: str,
     payload: OrderUpdate,
     db: Session = Depends(get_db),
     admin: str = Depends(get_current_admin),
@@ -91,7 +91,7 @@ def create_product(
 
 @router.put("/products/{product_id}", response_model=ProductResponse)
 def update_product(
-    product_id: int,
+    product_id: str,
     payload: ProductUpdate,
     db: Session = Depends(get_db),
     admin: str = Depends(get_current_admin),
@@ -104,7 +104,7 @@ def update_product(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def delete_product(
-    product_id: int,
+    product_id: str,
     db: Session = Depends(get_db),
     admin: str = Depends(get_current_admin),
 ):

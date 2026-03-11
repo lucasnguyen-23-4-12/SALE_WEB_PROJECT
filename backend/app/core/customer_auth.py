@@ -16,12 +16,12 @@ SECRET_KEY = settings.SECRET_KEY
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/customers/login")
 
 
-def create_customer_access_token(customer_id: int) -> str:
+def create_customer_access_token(customer_id: str) -> str:
     if not SECRET_KEY:
         raise ValueError("SECRET_KEY is not set in environment variables.")
 
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    payload = {"sub": str(customer_id), "role": "customer", "exp": expire}
+    payload = {"sub": customer_id, "role": "customer", "exp": expire}
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
@@ -40,7 +40,7 @@ def get_current_customer(
         role = payload.get("role")
         if not sub or role != "customer":
             raise credentials_exception
-        customer_id = int(sub)
+        customer_id = sub
     except (JWTError, ValueError):
         raise credentials_exception
 
@@ -49,4 +49,3 @@ def get_current_customer(
         raise credentials_exception
 
     return customer
-

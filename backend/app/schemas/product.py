@@ -7,7 +7,7 @@ class ProductBase(BaseModel):
     description: Optional[str] = None
     image_url: Optional[str] = None
     unit_price: Decimal = Field(gt=0)
-    category_id: int = Field(ge=1)
+    category_id: str = Field(min_length=1, max_length=50)
     discount_percent: int = Field(default=0, ge=0, le=100)
     stock_quantity: int = Field(default=0, ge=0)
     rating_avg: Decimal = Field(default=Decimal("0"), ge=0, le=5)
@@ -21,12 +21,12 @@ class ProductUpdate(BaseModel):
     description: Optional[str] = None
     image_url: Optional[str] = None
     unit_price: Optional[Decimal] = Field(default=None, gt=0)
-    category_id: Optional[int] = Field(default=None, ge=1)
+    category_id: Optional[str] = Field(default=None, min_length=1, max_length=50)
     discount_percent: Optional[int] = Field(default=None, ge=0, le=100)
     stock_quantity: Optional[int] = Field(default=None, ge=0)
 
 class ProductResponse(ProductBase):
-    product_id: int
+    product_id: str
 
     model_config = {
         "from_attributes": True

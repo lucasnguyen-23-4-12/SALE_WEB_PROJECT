@@ -24,7 +24,7 @@ def verify_password(password: str, stored_hash: str) -> bool:
     return stored_hash == _sha256(password)
 
 
-def get_customer_by_id(db: Session, customer_id: int):
+def get_customer_by_id(db: Session, customer_id: str):
     customer = db.query(Customer).filter(
         Customer.customer_id == customer_id
     ).first()
@@ -86,7 +86,7 @@ def authenticate_customer(db: Session, email_or_phone: str, password: str):
     return customer
 
 
-def update_customer(db: Session, customer_id: int, data: CustomerUpdate):
+def update_customer(db: Session, customer_id: str, data: CustomerUpdate):
 
     customer = get_customer_by_id(db, customer_id)
 
@@ -101,7 +101,7 @@ def update_customer(db: Session, customer_id: int, data: CustomerUpdate):
     return customer
 
 
-def delete_customer(db: Session, customer_id: int):
+def delete_customer(db: Session, customer_id: str):
 
     customer = get_customer_by_id(db, customer_id)
 

@@ -1,11 +1,12 @@
 from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy.schema import FetchedValue
 from sqlalchemy.orm import relationship
 from app.database import Base
 
 class Customer(Base):
     __tablename__ = "customers"
 
-    customer_id = Column("CustomerID", Integer, primary_key=True, index=True)
+    customer_id = Column("CustomerID", String(50), primary_key=True, index=True, server_default=FetchedValue())
     customer_name = Column("CustomerName", String(255), nullable=False)
     customer_email = Column("CustomerEmail", String(255), unique=True, index=True, nullable=False)
     phone_number = Column("PhoneNumber", String(20))

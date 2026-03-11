@@ -12,18 +12,18 @@ def create_address(db: Session, data: AddressCreate):
     return addr
 
 
-def get_addresses_by_customer(db: Session, customer_id: int):
+def get_addresses_by_customer(db: Session, customer_id: str):
     return db.query(Address).filter(Address.customer_id == customer_id).all()
 
 
-def get_address_by_id(db: Session, address_id: int):
+def get_address_by_id(db: Session, address_id: str):
     address = db.query(Address).filter(Address.address_id == address_id).first()
     if not address:
         raise NotFoundException("Address")
     return address
 
 
-def delete_address(db: Session, address_id: int):
+def delete_address(db: Session, address_id: str):
     address = get_address_by_id(db, address_id)
     db.delete(address)
     db.commit()

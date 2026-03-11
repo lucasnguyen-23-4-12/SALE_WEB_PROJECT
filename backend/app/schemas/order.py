@@ -4,12 +4,12 @@ from datetime import date
 
 class OrderItemInput(BaseModel):
     """Schema cho order item khi tạo order"""
-    product_id: int = Field(ge=1)
+    product_id: str = Field(min_length=1, max_length=50)
     quantity: int = Field(ge=1)
 
 class OrderBase(BaseModel):
-    customer_id: int = Field(ge=1)
-    payment_method_id: int = Field(ge=1)
+    customer_id: str = Field(min_length=1, max_length=50)
+    payment_method_id: str = Field(min_length=1, max_length=50)
     order_date: date
     status: str = Field(min_length=1, max_length=50)
     shipping_address: Optional[str] = None
@@ -18,15 +18,15 @@ class OrderBase(BaseModel):
 
 class OrderCreate(BaseModel):
     """Schema tạo order mới - client gửi items trong request"""
-    customer_id: int = Field(ge=1)
-    payment_method_id: int = Field(ge=1)
+    customer_id: str = Field(min_length=1, max_length=50)
+    payment_method_id: str = Field(min_length=1, max_length=50)
     items: List[OrderItemInput]
 
 class OrderUpdate(BaseModel):
     status: Optional[str] = Field(default=None, min_length=1, max_length=50)
 
 class OrderResponse(OrderBase):
-    order_id: int
+    order_id: str
 
     model_config = {
         "from_attributes": True

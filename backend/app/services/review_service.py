@@ -30,22 +30,22 @@ def create_review(db: Session, data: ReviewCreate):
     return new
 
 
-def get_reviews_by_product(db: Session, product_id: int):
+def get_reviews_by_product(db: Session, product_id: str):
     return db.query(Review).filter(Review.product_id == product_id).all()
 
 
-def get_reviews_by_customer(db: Session, customer_id: int):
+def get_reviews_by_customer(db: Session, customer_id: str):
     return db.query(Review).filter(Review.customer_id == customer_id).all()
 
 
-def get_review_by_id(db: Session, review_id: int):
+def get_review_by_id(db: Session, review_id: str):
     review = db.query(Review).filter(Review.review_id == review_id).first()
     if not review:
         raise NotFoundException("Review")
     return review
 
 
-def delete_review(db: Session, review_id: int):
+def delete_review(db: Session, review_id: str):
     review = get_review_by_id(db, review_id)
     db.delete(review)
     db.commit()
