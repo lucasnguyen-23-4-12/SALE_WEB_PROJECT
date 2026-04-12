@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Táº¥t cáº£ Ä‘Æ¡n hÃ ng - TAM TAI</title>
+  <title>Tất cả đơn hàng - TAM TAI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,13 +20,13 @@
 
       <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="search" id="orderSearch" placeholder="TÃ¬m kiáº¿m theo mÃ£ Ä‘Æ¡n hÃ ng">
+        <input type="search" id="orderSearch" placeholder="Tìm kiếm theo mã đơn hàng">
       </div>
 
       <div class="header-icons">
-        <a href="../user/notification.html" aria-label="ThÃ´ng bÃ¡o"><i class="fa-solid fa-bell"></i></a>
-        <a href="cart.html" aria-label="Giá» hÃ ng"><i class="fa-solid fa-cart-shopping"></i></a>
-        <a href="../user/profile.html" aria-label="TÃ i khoáº£n"><i class="fa-solid fa-user"></i></a>
+        <a href="../user/notification.html" aria-label="Thông báo"><i class="fa-solid fa-bell"></i></a>
+        <a href="cart.html" aria-label="Giỏ hàng"><i class="fa-solid fa-cart-shopping"></i></a>
+        <a href="../user/profile.html" aria-label="Tài khoản"><i class="fa-solid fa-user"></i></a>
       </div>
     </div>
   </header>
@@ -34,28 +34,28 @@
   <main class="page-wrap">
     <div class="orders-shell">
       <div class="orders-head">
-        <h1>Táº¥t cáº£ Ä‘Æ¡n hÃ ng</h1>
-        <a href="../user/profile.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Quay láº¡i trang tÃ i khoáº£n</a>
+        <h1>Tất cả đơn hàng</h1>
+        <a href="../user/profile.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Quay lại trang tài khoản</a>
       </div>
 
       <div class="orders-filters" id="ordersFilters">
-        <button class="active" data-status="all">Táº¥t cáº£</button>
-        <button data-status="pending">Chá» xÃ¡c nháº­n</button>
-        <button data-status="shipping">Äang giao</button>
-        <button data-status="delivered">ÄÃ£ giao</button>
-        <button data-status="cancelled">ÄÃ£ há»§y</button>
+        <button class="active" data-status="all">Tất cả</button>
+        <button data-status="pending">Chờ xác nhận</button>
+        <button data-status="shipping">Đang giao</button>
+        <button data-status="delivered">Đã giao</button>
+        <button data-status="cancelled">Đã hủy</button>
       </div>
 
-      <p class="orders-summary" id="ordersSummary">Hiá»ƒn thá»‹ 0 - 0 / 0 Ä‘Æ¡n hÃ ng</p>
+      <p class="orders-summary" id="ordersSummary">Hiển thị 0 - 0 / 0 đơn hàng</p>
 
       <section class="orders-table">
         <div class="order-row order-head-row">
-          <span>MÃ£ Ä‘Æ¡n</span>
-          <span>NgÃ y Ä‘áº·t</span>
-          <span>Sáº£n pháº©m</span>
-          <span>Tá»•ng tiá»n</span>
-          <span>Tráº¡ng thÃ¡i</span>
-          <span>Thao tÃ¡c</span>
+          <span>Mã đơn</span>
+          <span>Ngày đặt</span>
+          <span>Sản phẩm</span>
+          <span>Tổng tiền</span>
+          <span>Trạng thái</span>
+          <span>Thao tác</span>
         </div>
         <div id="ordersBody"></div>
       </section>
@@ -66,25 +66,25 @@
 
   <footer class="site-footer">
     <div class="footer-col">
-      <h3>Vá» Website</h3>
-      <a href="#">Giá»›i thiá»‡u</a>
-      <a href="#">Thá»i trang uy tÃ­n</a>
-      <a href="#">Äiá»ƒm mua sáº¯m</a>
+      <h3>Về Website</h3>
+      <a href="#">Giới thiệu</a>
+      <a href="#">Thời trang uy tín</a>
+      <a href="#">Điểm mua sắm</a>
     </div>
     <div class="footer-col">
-      <h3>LiÃªn káº¿t</h3>
-      <a href="#">Diá»…n Ä‘Ã n cÃ´ng nghá»‡</a>
-      <a href="#">Æ¯u Ä‘Ã£i hÃ´m nay</a>
+      <h3>Liên kết</h3>
+      <a href="#">Diễn đàn công nghệ</a>
+      <a href="#">Ưu đãi hôm nay</a>
       <a href="#">Flash sale</a>
     </div>
     <div class="footer-col">
-      <h3>Há»— trá»£</h3>
-      <a href="#">LiÃªn há»‡ tÆ° váº¥n</a>
-      <a href="#">ChÃ­nh sÃ¡ch giao hÃ ng</a>
-      <a href="#">Äiá»u khoáº£n</a>
+      <h3>Hỗ trợ</h3>
+      <a href="#">Liên hệ tư vấn</a>
+      <a href="#">Chính sách giao hàng</a>
+      <a href="#">Điều khoản</a>
     </div>
     <div class="footer-col">
-      <h3>Theo dÃµi</h3>
+      <h3>Theo dõi</h3>
       <a href="#">Facebook</a>
       <a href="#">Instagram</a>
       <a href="#">TikTok</a>

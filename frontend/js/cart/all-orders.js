@@ -37,14 +37,23 @@
     return null;
   }
 
+  function normalizeStatusText(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d");
+  }
+
   function formatDate(dateValue) {
     if (!dateValue) {
-      return "chua co";
+      return "Chưa có";
     }
 
     var date = new Date(dateValue);
     if (Number.isNaN(date.getTime())) {
-      return "chua co";
+      return "Chưa có";
     }
 
     var dd = String(date.getDate()).padStart(2, "0");
@@ -54,21 +63,21 @@
   }
 
   function mapStatus(rawStatus) {
-    var normalized = String(rawStatus || "").trim().toLowerCase();
+    var normalized = normalizeStatusText(rawStatus);
     if (!normalized) {
-      return { key: "pending", label: "chua co", className: "pending" };
+      return { key: "pending", label: "Chưa có", className: "pending" };
     }
     if (normalized.indexOf("deliver") !== -1 || normalized.indexOf("da giao") !== -1) {
-      return { key: "delivered", label: "Da giao", className: "delivered" };
+      return { key: "delivered", label: "Đã giao", className: "delivered" };
     }
     if (normalized.indexOf("ship") !== -1 || normalized.indexOf("giao") !== -1) {
-      return { key: "shipping", label: "Dang giao", className: "shipping" };
+      return { key: "shipping", label: "Đang giao", className: "shipping" };
     }
     if (normalized.indexOf("cancel") !== -1 || normalized.indexOf("huy") !== -1) {
-      return { key: "cancelled", label: "Da huy", className: "cancelled" };
+      return { key: "cancelled", label: "Đã hủy", className: "cancelled" };
     }
     if (normalized.indexOf("pend") !== -1 || normalized.indexOf("wait") !== -1 || normalized.indexOf("cho") !== -1) {
-      return { key: "pending", label: "Cho xac nhan", className: "pending" };
+      return { key: "pending", label: "Chờ xác nhận", className: "pending" };
     }
     return { key: "pending", label: rawStatus, className: "pending" };
   }
@@ -130,7 +139,6 @@
       });
 
       if (!response.ok) {
-        ordersData.orders = [];
         return;
       }
 
@@ -138,7 +146,7 @@
       var rows = Array.isArray(payload) ? payload : [];
       ordersData.orders = rows.map(toFrontendOrder);
     } catch (error) {
-      ordersData.orders = [];
+      // Keep fallback data from orders-data.js when backend is unavailable.
     }
   }
 
@@ -154,15 +162,15 @@
   function createOrderRow(order) {
     var status = order.statusLabel
       ? { label: order.statusLabel, className: order.statusClassName }
-      : (ordersData.statusMeta[order.status] || { label: "chua co", className: "pending" });
+      : (ordersData.statusMeta[order.status] || { label: "Chưa có", className: "pending" });
 
     var hasItemCount = Number.isFinite(order.itemCount);
-    var itemText = hasItemCount ? (order.itemCount + " san pham") : "chua co";
+    var itemText = hasItemCount ? (order.itemCount + " sản phẩm") : "Chưa có";
     var totalText = typeof order.total === "number" && Number.isFinite(order.total)
       ? ordersData.formatCurrency(order.total)
-      : "chua co";
+      : "Chưa có";
 
-    var repayLabel = order.status === "pending" ? "Thanh toan tiep" : "Mua lai";
+    var repayLabel = order.status === "pending" ? "Thanh toán tiếp" : "Mua lại";
     var repayLink = order.status === "pending" ? "checkout.html" : "cart.html";
 
     return [
@@ -173,7 +181,7 @@
       "  <span>" + totalText + "</span>",
       '  <span class="status ' + status.className + '">' + status.label + "</span>",
       '  <span class="actions">',
-      '    <a href="order-detail.html?id=' + encodeURIComponent(normalizeOrderId(order.id)) + '">Chi tiet</a>',
+      '    <a href="order-detail.html?id=' + encodeURIComponent(normalizeOrderId(order.id)) + '">Chi tiết</a>',
       '    <a href="' + repayLink + '">' + repayLabel + "</a>",
       "  </span>",
       "</div>"
@@ -187,7 +195,7 @@
     }
 
     var html = "";
-    html += '<button data-page="' + (state.page - 1) + '"' + (state.page === 1 ? " disabled" : "") + ">Truoc</button>";
+    html += '<button data-page="' + (state.page - 1) + '"' + (state.page === 1 ? " disabled" : "") + ">Trước</button>";
     for (var i = 1; i <= totalPages; i += 1) {
       html += '<button data-page="' + i + '"' + (state.page === i ? ' class="active"' : "") + ">" + i + "</button>";
     }
@@ -201,13 +209,13 @@
     }
 
     if (totalItems === 0) {
-      summaryEl.textContent = "Hien thi 0 - 0 / 0 don hang";
+      summaryEl.textContent = "Hiển thị 0 - 0 / 0 đơn hàng";
       return;
     }
 
     var start = (state.page - 1) * pageSize + 1;
     var end = Math.min(state.page * pageSize, totalItems);
-    summaryEl.textContent = "Hien thi " + start + " - " + end + " / " + totalItems + " don hang";
+    summaryEl.textContent = "Hiển thị " + start + " - " + end + " / " + totalItems + " đơn hàng";
   }
 
   function renderOrders() {
@@ -222,7 +230,7 @@
     var pagedOrders = filteredOrders.slice(startIndex, startIndex + pageSize);
 
     if (!pagedOrders.length) {
-      ordersBody.innerHTML = '<div class="order-row order-empty">chua co don hang</div>';
+      ordersBody.innerHTML = '<div class="order-row order-empty">Chưa có đơn hàng</div>';
     } else {
       ordersBody.innerHTML = pagedOrders.map(createOrderRow).join("");
     }

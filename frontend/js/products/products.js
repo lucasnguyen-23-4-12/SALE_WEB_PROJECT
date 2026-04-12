@@ -109,6 +109,10 @@
     return categoryLabel(a.category_id, a.category_name).localeCompare(categoryLabel(b.category_id, b.category_name), "vi");
   }
 
+  function isPrimaryCategoryId(categoryId) {
+    return CATEGORY_PRIORITY.indexOf(String(categoryId || "")) !== -1;
+  }
+
   function getPriceBeforeDiscount(price, discountPercent) {
     if (!discountPercent || discountPercent <= 0 || discountPercent >= 100) {
       return price;
@@ -168,16 +172,6 @@
       cloned.sort(function (a, b) { return a.price - b.price; });
     } else if (sortMode === 2) {
       cloned.sort(function (a, b) { return b.price - a.price; });
-    } else if (sortMode === 3) {
-      cloned.sort(function (a, b) {
-        if (b.totalReviews !== a.totalReviews) {
-          return b.totalReviews - a.totalReviews;
-        }
-        if (b.ratingAvg !== a.ratingAvg) {
-          return b.ratingAvg - a.ratingAvg;
-        }
-        return a.orderIndex - b.orderIndex;
-      });
     } else {
       cloned.sort(function (a, b) { return a.orderIndex - b.orderIndex; });
     }
@@ -268,24 +262,28 @@
       categoriesById[category.category_id] = category;
     });
 
-    var normalizedProducts = products.map(function (product, index) {
-      var category = categoriesById[product.category_id] || null;
+    var normalizedProducts = products
+      .filter(function (product) {
+        return isPrimaryCategoryId(product.category_id);
+      })
+      .map(function (product, index) {
+        var category = categoriesById[product.category_id] || null;
 
-      return {
-        id: String(product.product_id),
-        categoryId: String(product.category_id || ''),
-        categoryName: categoryLabel(product.category_id, category && category.category_name),
-        name: String(product.product_name || 'S\u1ea3n ph\u1ea9m'),
-        description: String(product.description || ''),
-        image: toImageSrc(product.image_url),
-        price: toNumber(product.unit_price, 0),
-        discountPercent: toNumber(product.discount_percent, 0),
-        stockQuantity: toNumber(product.stock_quantity, 0),
-        ratingAvg: toNumber(product.rating_avg, 0),
-        totalReviews: toNumber(product.total_reviews, 0),
-        orderIndex: index
-      };
-    });
+        return {
+          id: String(product.product_id),
+          categoryId: String(product.category_id || ''),
+          categoryName: categoryLabel(product.category_id, category && category.category_name),
+          name: String(product.product_name || 'S\u1ea3n ph\u1ea9m'),
+          description: String(product.description || ''),
+          image: toImageSrc(product.image_url),
+          price: toNumber(product.unit_price, 0),
+          discountPercent: toNumber(product.discount_percent, 0),
+          stockQuantity: toNumber(product.stock_quantity, 0),
+          ratingAvg: toNumber(product.rating_avg, 0),
+          totalReviews: toNumber(product.total_reviews, 0),
+          orderIndex: index
+        };
+      });
 
     return {
       categories: categories,
@@ -421,7 +419,9 @@
       });
 
       var categories = catalog.categories
-        .filter(function (category) { return categoryCounts[category.category_id] > 0; })
+        .filter(function (category) {
+          return isPrimaryCategoryId(category.category_id) && categoryCounts[category.category_id] > 0;
+        })
         .sort(compareCategories);
 
       renderCategoryFilters(categoryFilterBlock, categories, categoryCounts);
@@ -432,6 +432,9 @@
       var initialKeywordRaw = params.get('q') || '';
       var initialKeyword = normalizeText(initialKeywordRaw);
       var initialCategoryId = resolveCategoryIdFromQuery(params.get('category'), catalog.categoriesById);
+      if (initialCategoryId && !isPrimaryCategoryId(initialCategoryId)) {
+        initialCategoryId = '';
+      }
 
       var state = {
         selectedCategories: new Set(initialCategoryId ? [initialCategoryId] : []),
