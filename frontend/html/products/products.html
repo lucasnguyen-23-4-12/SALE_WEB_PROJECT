@@ -1,0 +1,238 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sản phẩm - TAM TAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../../css/products/products.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="top-strip"></div>
+    <div class="main-header">
+      <a href="../core/landing.html" class="logo-box" aria-label="Trang Landing">
+        <img src="../../images/modern-logo-with-gradient-squares.png" alt="TAM TAI Logo">
+      </a>
+
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" placeholder="Tìm kiếm sản phẩm">
+      </div>
+
+      <div class="header-icons">
+        <a href="../user/notification.html" aria-label="Thông báo"><i class="fa-solid fa-bell"></i></a>
+        <a href="../cart/cart.html" aria-label="Giỏ hàng"><i class="fa-solid fa-cart-shopping"></i></a>
+        <a href="../user/profile.html" aria-label="Tài khoản"><i class="fa-solid fa-user"></i></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+    <section class="breadcrumb-row">
+      <a href="../core/landing.html">Trang chủ</a>
+      <span>/</span>
+      <strong>Danh mục Sản phẩm</strong>
+    </section>
+
+    <section class="hero-products">
+      <div class="hero-copy">
+        <p class="hero-kicker">Khám phá các sản phẩm chất lượng</p>
+        <h1>Laptop, PC, tai nghe và phụ kiện công nghệ</h1>
+        <p>
+          Mua sắm thả thích với hàng ngàn sản phẩm chính hãng.
+          Ưu đãi hấp dẫn mỗi ngày cùng chính sách hậu mãi rõ ràng từ TAM TAI.
+        </p>
+        <div class="hero-actions">
+          <a href="#products-list" class="btn-primary">Mua sắm ngay</a>
+          <a href="../auth/register.html" class="btn-secondary" data-guest-only="true">Đăng ký nhanh</a>
+        </div>
+      </div>
+
+      <div class="hero-image">
+        <img src="../../images/acer-refurbished-laptop-500x500.webp" alt="Sản phẩm laptop nổi bật">
+      </div>
+    </section>
+
+    <section class="benefits">
+      <article class="benefit-card">
+        <i class="fa-solid fa-truck-fast"></i>
+        <div>
+          <h3>Giao hàng nhanh</h3>
+          <p>Miễn phí nội thành cho đơn đủ điều kiện.</p>
+        </div>
+      </article>
+      <article class="benefit-card">
+        <i class="fa-solid fa-shield-heart"></i>
+        <div>
+          <h3>Bảo hành dài hạn</h3>
+          <p>Hỗ trợ đổi trả theo chính sách minh bạch.</p>
+        </div>
+      </article>
+      <article class="benefit-card">
+        <i class="fa-solid fa-star"></i>
+        <div>
+          <h3>Đánh giá cao</h3>
+          <p>Hơn 5.000 khách hàng mua và phản hồi tốt.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="quick-categories">
+      <a href="#" class="quick-item active">
+        <i class="fa-solid fa-mobile-screen"></i>
+        <span>Điện thoại</span>
+      </a>
+      <a href="#" class="quick-item">
+        <i class="fa-solid fa-laptop"></i>
+        <span>Laptop</span>
+      </a>
+      <a href="#" class="quick-item">
+        <i class="fa-solid fa-headphones"></i>
+        <span>Tai nghe</span>
+      </a>
+      <a href="#" class="quick-item">
+        <i class="fa-solid fa-clock"></i>
+        <span>Đồng hồ</span>
+      </a>
+      <a href="#" class="quick-item">
+        <i class="fa-solid fa-keyboard"></i>
+        <span>Bàn phím</span>
+      </a>
+      <a href="#" class="quick-item">
+        <i class="fa-solid fa-computer-mouse"></i>
+        <span>Chuột</span>
+      </a>
+    </section>
+
+    <section class="products-area" id="products-list">
+            <aside class="filter-panel">
+        <div class="filter-block">
+          <h2>Danh mục</h2>
+          <label><input type="checkbox" checked> Tất cả</label>
+          <label><input type="checkbox" checked> Điện thoại</label>
+          <label><input type="checkbox"> Laptop</label>
+          <label><input type="checkbox"> Tai nghe</label>
+          <label><input type="checkbox"> Loa</label>
+          <label><input type="checkbox"> Đồng hồ</label>
+        </div>
+
+        <div class="filter-block">
+          <h2>Khoảng giá</h2>
+          <label><input type="checkbox"> &lt; 100k</label>
+          <label><input type="checkbox"> 100k - 500k</label>
+          <label><input type="checkbox"> 500k - 2 triệu</label>
+          <label><input type="checkbox"> 2 triệu - 10 triệu</label>
+          <label><input type="checkbox"> &gt; 10 triệu</label>
+        </div>
+
+        <div class="filter-block">
+          <h2>Sắp xếp</h2>
+          <select>
+            <option>Mặc định</option>
+            <option>Giá tăng dần</option>
+            <option>Giá giảm dần</option>
+            <option>Bán chạy nhất</option>
+          </select>
+        </div>
+      </aside>
+
+      <section class="products-content">
+        <div class="products-head">
+          <h2>SẢN PHẨM</h2>
+          <button class="filter-btn">Bộ lọc</button>
+        </div>
+
+        <div class="product-grid">
+          <article class="product-card">
+            <div class="product-image">
+              <img src="../../images/acer-refurbished-laptop-500x500.webp" alt="Laptop văn phòng">
+            </div>
+            <h3>Laptop Văn Phòng A1</h3>
+            <p>15.900.000đ</p>
+          </article>
+          <article class="product-card">
+            <div class="product-image"></div>
+            <h3>Tai nghe Pro X</h3>
+            <p>1.250.000đ</p>
+          </article>
+          <article class="product-card">
+            <div class="product-image"></div>
+            <h3>Chuột Gaming G9</h3>
+            <p>790.000đ</p>
+          </article>
+          <article class="product-card">
+            <div class="product-image"></div>
+            <h3>Bàn phím cơ K87</h3>
+            <p>1.490.000đ</p>
+          </article>
+          <article class="product-card">
+            <div class="product-image"></div>
+            <h3>Đồng hồ thông minh T2</h3>
+            <p>2.990.000đ</p>
+          </article>
+          <article class="product-card">
+            <div class="product-image"></div>
+            <h3>Loa bluetooth Mini</h3>
+            <p>650.000đ</p>
+          </article>
+          <article class="product-card">
+            <div class="product-image"></div>
+            <h3>Màn hình 24 inch</h3>
+            <p>3.490.000đ</p>
+          </article>
+          <article class="product-card">
+            <div class="product-image"></div>
+            <h3>Ổ cứng SSD 1TB</h3>
+            <p>2.150.000đ</p>
+          </article>
+          <article class="product-card">
+            <div class="product-image"></div>
+            <h3>Webcam Full HD</h3>
+            <p>990.000đ</p>
+          </article>
+        </div>
+
+        <a href="#" class="more-btn">Xem tất cả sản phẩm</a>
+      </section>
+    </section>
+
+    <section class="cta-section" data-guest-only="true">
+      <h2>Nhận ngay ưu đãi 10%</h2>
+      <p>Đăng ký tài khoản để nhận mã giảm giá và ưu đãi mới sớm nhất.</p>
+      <a href="../auth/register.html" class="cta-btn" data-guest-only="true">Đăng ký ngay</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-col">
+      <h3>Về Website</h3>
+      <a href="#">Chính sách bảo mật</a>
+      <a href="#">Quy chế hoạt động</a>
+    </div>
+    <div class="footer-col">
+      <h3>Liên kết</h3>
+      <a href="#">Khuyến mãi hôm nay</a>
+      <a href="#">Danh mục nổi bật</a>
+    </div>
+    <div class="footer-col">
+      <h3>Hỗ trợ</h3>
+      <a href="#">Trung tâm trợ giúp</a>
+      <a href="#">Câu hỏi thường gặp</a>
+    </div>
+    <div class="footer-col">
+      <h3>Theo dõi</h3>
+      <a href="#">Facebook</a>
+      <a href="#">TikTok</a>
+    </div>
+  </footer>
+
+  <script src="../../js/core/common.js?v=20260408"></script>
+  <script src="../../js/products/products.js?v=20260408b"></script>
+</body>
+</html>
+
+

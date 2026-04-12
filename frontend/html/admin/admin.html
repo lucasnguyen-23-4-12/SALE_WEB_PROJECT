@@ -1,0 +1,239 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản trị TAM TAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../../css/admin/admin.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="top-strip"></div>
+    <div class="main-header">
+      <a href="../core/landing.html" class="logo-box" aria-label="Trang chủ">
+        <img src="../../images/modern-logo-with-gradient-squares.png" alt="TAM TAI Logo">
+      </a>
+      <label class="search-box" for="adminGlobalSearch">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="adminGlobalSearch" type="search" placeholder="Tìm trong mục đang mở...">
+      </label>
+      <div class="header-actions">
+        <a href="../products/products.html" class="header-link">Xem shop</a>
+        <button type="button" class="logout-btn" data-logout data-redirect="../auth/login.html">Đăng xuất</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+    <section class="admin-head">
+      <div>
+        <p class="eyebrow">Bảng điều khiển quản trị</p>
+        <h1>Quản lý dữ liệu thật từ PostgreSQL</h1>
+        <p class="admin-subtitle">Theo dõi sản phẩm, tài khoản, đơn hàng và mã giảm giá trên cùng một trang.</p>
+      </div>
+      <button type="button" class="ghost-btn" id="refreshAllBtn">
+        <i class="fa-solid fa-rotate-right"></i>
+        Làm mới dữ liệu
+      </button>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card"><p>Tổng sản phẩm</p><strong id="statProducts">0</strong><span>Từ cơ sở dữ liệu hiện tại</span></article>
+      <article class="stat-card"><p>Tổng người dùng</p><strong id="statCustomers">0</strong><span>Đang lưu trong hệ thống</span></article>
+      <article class="stat-card"><p>Đơn hàng</p><strong id="statOrders">0</strong><span>Toàn bộ lịch sử mua hàng</span></article>
+      <article class="stat-card"><p>Doanh thu</p><strong id="statRevenue">0đ</strong><span>Tổng tiền từ các đơn hiện có</span></article>
+      <article class="stat-card"><p>Danh mục</p><strong id="statCategories">0</strong><span>Số category đang dùng</span></article>
+      <article class="stat-card"><p>Đơn chờ xử lý</p><strong id="statPendingOrders">0</strong><span>Cần admin theo dõi</span></article>
+      <article class="stat-card"><p>Sắp hết hàng</p><strong id="statLowStock">0</strong><span>Tồn kho dưới hoặc bằng 5</span></article>
+      <article class="stat-card"><p>Mã giảm giá</p><strong id="statDiscountCodes">0</strong><span>Đang hoạt động</span></article>
+    </section>
+
+    <div class="page-message" id="pageMessage" role="status" aria-live="polite"></div>
+
+    <section class="admin-layout">
+      <aside class="admin-menu">
+        <button type="button" class="menu-link active" data-view-target="dashboard"><i class="fa-solid fa-chart-line"></i><span>Tổng quan</span></button>
+        <button type="button" class="menu-link" data-view-target="products"><i class="fa-solid fa-box-open"></i><span>Sản phẩm</span></button>
+        <button type="button" class="menu-link" data-view-target="orders"><i class="fa-solid fa-bag-shopping"></i><span>Đơn hàng</span></button>
+        <button type="button" class="menu-link" data-view-target="customers"><i class="fa-solid fa-users"></i><span>Người dùng</span></button>
+        <button type="button" class="menu-link" data-view-target="discounts"><i class="fa-solid fa-ticket"></i><span>Mã giảm giá</span></button>
+      </aside>
+
+      <section class="admin-content">
+        <section class="view-section active" data-view="dashboard">
+          <div class="section-grid two-columns">
+            <article class="card-block">
+              <div class="block-head"><h2>Đơn hàng gần đây</h2></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>Mã đơn</th><th>Khách hàng</th><th>Trạng thái</th><th>Tổng tiền</th><th>Ngày</th></tr>
+                  </thead>
+                  <tbody id="dashboardOrdersTable"></tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="card-block">
+              <div class="block-head"><h2>Sản phẩm bán nổi bật</h2></div>
+              <div class="mini-list" id="dashboardTopProducts"></div>
+            </article>
+          </div>
+
+          <article class="card-block">
+            <div class="block-head"><h2>Sản phẩm sắp hết hàng</h2></div>
+            <div class="mini-list" id="dashboardLowStock"></div>
+          </article>
+        </section>
+
+        <section class="view-section" data-view="products">
+          <div class="section-toolbar">
+            <div class="toolbar-group">
+              <input id="productSearch" type="search" placeholder="Tìm sản phẩm theo mã, tên, mô tả...">
+              <select id="productCategoryFilter"></select>
+            </div>
+            <button type="button" class="ghost-btn" id="reloadProductsBtn">Tải lại sản phẩm</button>
+          </div>
+
+          <div class="section-grid">
+            <article class="card-block">
+              <div class="block-head"><h2>Danh sách sản phẩm</h2><span class="block-meta" id="productsMeta">0 sản phẩm</span></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>Mã</th><th>Sản phẩm</th><th>Danh mục</th><th>Giá</th><th>Tồn kho</th><th>Đã bán</th><th>Thao tác</th></tr>
+                  </thead>
+                  <tbody id="productsTableBody"></tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="card-block form-card">
+              <div class="block-head"><h2 id="productFormTitle">Thêm sản phẩm mới</h2><button type="button" class="ghost-btn" id="resetProductFormBtn">Tạo mẫu mới</button></div>
+              <form id="productForm" class="admin-form">
+                <input type="hidden" id="productFormId">
+                <label><span>Tên sản phẩm</span><input id="productName" type="text" required></label>
+                <label><span>Danh mục</span><select id="productCategory" required></select></label>
+                <label><span>Ảnh sản phẩm</span><input id="productImageUrl" type="url" placeholder="https://..."></label>
+                <label><span>Giá bán</span><input id="productPrice" type="number" min="1" step="1000" required></label>
+                <label><span>Giảm giá (%)</span><input id="productDiscount" type="number" min="0" max="100" value="0"></label>
+                <label><span>Tồn kho</span><input id="productStock" type="number" min="0" value="0"></label>
+                <label><span>Điểm đánh giá</span><input id="productRating" type="number" min="0" max="5" step="0.1" value="0"></label>
+                <label><span>Tổng đánh giá</span><input id="productReviews" type="number" min="0" value="0"></label>
+                <label class="full-width"><span>Mô tả</span><textarea id="productDescription" rows="4"></textarea></label>
+                <div class="form-actions full-width">
+                  <button type="submit" class="primary-btn" id="productSubmitBtn">Lưu sản phẩm</button>
+                  <button type="button" class="ghost-btn" id="productCancelBtn">Hủy chỉnh sửa</button>
+                </div>
+              </form>
+            </article>
+          </div>
+        </section>
+
+        <section class="view-section" data-view="orders">
+          <div class="section-toolbar">
+            <div class="toolbar-group"><input id="orderSearch" type="search" placeholder="Tìm mã đơn, khách hàng, trạng thái..."></div>
+            <button type="button" class="ghost-btn" id="reloadOrdersBtn">Tải lại đơn hàng</button>
+          </div>
+          <article class="card-block">
+            <div class="block-head"><h2>Quản lý đơn hàng</h2><span class="block-meta" id="ordersMeta">0 đơn</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Mã đơn</th><th>Khách hàng</th><th>Tổng tiền</th><th>Ngày</th><th>Trạng thái</th><th>Cập nhật</th></tr>
+                </thead>
+                <tbody id="ordersTableBody"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section class="view-section" data-view="customers">
+          <div class="section-toolbar">
+            <div class="toolbar-group"><input id="customerSearch" type="search" placeholder="Tìm người dùng theo tên, email, số điện thoại..."></div>
+            <button type="button" class="ghost-btn" id="reloadCustomersBtn">Tải lại người dùng</button>
+          </div>
+
+          <div class="section-grid">
+            <article class="card-block">
+              <div class="block-head"><h2>Tài khoản người dùng</h2><span class="block-meta" id="customersMeta">0 tài khoản</span></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>ID</th><th>Người dùng</th><th>Liên hệ</th><th>Đơn hàng</th><th>Tổng chi</th><th>Trạng thái</th><th>Thao tác</th></tr>
+                  </thead>
+                  <tbody id="customersTableBody"></tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="card-block form-card">
+              <div class="block-head"><h2 id="customerFormTitle">Chỉnh sửa người dùng</h2><button type="button" class="ghost-btn" id="resetCustomerFormBtn">Bỏ chọn</button></div>
+              <form id="customerForm" class="admin-form">
+                <input type="hidden" id="customerFormId">
+                <label><span>Họ tên</span><input id="customerName" type="text" required></label>
+                <label><span>Email</span><input id="customerEmail" type="email" required></label>
+                <label><span>Số điện thoại</span><input id="customerPhone" type="text"></label>
+                <label><span>Trạng thái</span><select id="customerStatus"><option value="1">Đang hoạt động</option><option value="0">Tạm khóa</option></select></label>
+                <label class="full-width"><span>Địa chỉ</span><textarea id="customerAddress" rows="4"></textarea></label>
+                <div class="form-actions full-width">
+                  <button type="submit" class="primary-btn" id="customerSubmitBtn">Cập nhật người dùng</button>
+                  <button type="button" class="ghost-btn" id="customerCancelBtn">Hủy chỉnh sửa</button>
+                </div>
+              </form>
+            </article>
+          </div>
+        </section>
+
+        <section class="view-section" data-view="discounts">
+          <div class="section-toolbar">
+            <div class="toolbar-group"><input id="discountSearch" type="search" placeholder="Tìm mã, sản phẩm hoặc người dùng..."></div>
+            <button type="button" class="ghost-btn" id="reloadDiscountsBtn">Tải lại mã giảm giá</button>
+          </div>
+
+          <div class="section-grid">
+            <article class="card-block">
+              <div class="block-head"><h2>Danh sách mã giảm giá</h2><span class="block-meta" id="discountsMeta">0 mã</span></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>Mã</th><th>Phần trăm</th><th>Sản phẩm</th><th>Người dùng</th><th>Giới hạn</th><th>Trạng thái</th><th>Thao tác</th></tr>
+                  </thead>
+                  <tbody id="discountsTableBody"></tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="card-block form-card">
+              <div class="block-head"><h2 id="discountFormTitle">Tạo mã giảm giá</h2><button type="button" class="ghost-btn" id="resetDiscountFormBtn">Tạo mã mới</button></div>
+              <form id="discountForm" class="admin-form">
+                <input type="hidden" id="discountFormId">
+                <label><span>Mã giảm giá</span><input id="discountCode" type="text" required></label>
+                <label><span>Giảm (%)</span><input id="discountPercent" type="number" min="1" max="100" required></label>
+                <label><span>Áp dụng cho sản phẩm</span><select id="discountProduct"></select></label>
+                <label><span>Áp dụng cho người dùng</span><select id="discountCustomer"></select></label>
+                <label><span>Giới hạn sử dụng</span><input id="discountUsageLimit" type="number" min="1" value="1"></label>
+                <label><span>Bắt đầu</span><input id="discountStartsAt" type="datetime-local"></label>
+                <label><span>Hết hạn</span><input id="discountExpiresAt" type="datetime-local"></label>
+                <label><span>Trạng thái</span><select id="discountStatus"><option value="true">Đang hoạt động</option><option value="false">Tạm tắt</option></select></label>
+                <label class="full-width"><span>Mô tả</span><textarea id="discountDescription" rows="4"></textarea></label>
+                <div class="form-actions full-width">
+                  <button type="submit" class="primary-btn" id="discountSubmitBtn">Lưu mã giảm giá</button>
+                  <button type="button" class="ghost-btn" id="discountCancelBtn">Hủy chỉnh sửa</button>
+                </div>
+              </form>
+            </article>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <script src="../../js/core/common.js"></script>
+  <script src="../../js/admin/admin.js"></script>
+</body>
+</html>

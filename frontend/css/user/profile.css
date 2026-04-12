@@ -1,0 +1,640 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  color: #222a22;
+  background: radial-gradient(circle at top, #f2f6f2 0%, #e7ece7 55%, #e0e5df 100%);
+}
+
+.site-header {
+  width: 100%;
+  padding-top: 14px;
+}
+
+.top-strip {
+  width: 98%;
+  height: 9px;
+  margin: 0 auto;
+  background: #2f3c30;
+}
+
+.main-header {
+  width: 98%;
+  height: 70px;
+  margin: 0 auto;
+  background: linear-gradient(90deg, #59b156, #67bd60, #61b85d);
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr) 130px;
+  align-items: center;
+  column-gap: 20px;
+  padding: 0 28px;
+}
+
+.logo-box {
+  width: 236px;
+  height: 46px;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.search-box {
+  width: 100%;
+  max-width: 620px;
+  justify-self: center;
+  height: 40px;
+  background: #fff;
+  border: 1px solid #d5e4d2;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+}
+
+.search-box i {
+  color: #4f5f51;
+  font-size: 18px;
+}
+
+.search-box input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #2f3530;
+  font-size: 14px;
+}
+
+.header-icons {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 22px;
+  flex-shrink: 0;
+}
+
+.header-icons a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 24px;
+  opacity: 0.94;
+}
+
+.header-icons a:hover {
+  opacity: 1;
+}
+
+.page-wrap {
+  width: 96%;
+  margin: 0 auto;
+  padding: 16px 0 24px;
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 14px;
+}
+
+.profile-sidebar {
+  background: #edf4ec;
+  border: 1px solid #d8e4d7;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.profile-head {
+  text-align: center;
+  padding: 14px 10px 10px;
+  border-bottom: 1px solid #d6e2d5;
+}
+
+.avatar {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  background: linear-gradient(145deg, #d7dfd5, #bfc9bd);
+  color: #5f7061;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.profile-head h2 {
+  font-size: 29px;
+  color: #2f3e31;
+  margin-bottom: 4px;
+}
+
+.profile-head p {
+  font-size: 12px;
+  color: #647166;
+}
+
+.menu-list {
+  display: grid;
+}
+
+.menu-list a {
+  text-decoration: none;
+  color: #2f4232;
+  font-size: 14px;
+  padding: 12px 12px;
+  border-left: 3px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-list a:hover {
+  background: #e6f0e4;
+}
+
+.menu-list a.active {
+  background: #dcebd9;
+  border-left-color: #49a14e;
+  font-weight: 700;
+}
+
+.menu-list a.logout-link {
+  margin-top: 6px;
+  border-top: 1px solid #d6e2d5;
+  color: #b83b3b;
+  font-weight: 700;
+}
+
+.menu-list a.logout-link:hover {
+  background: #f5e9e9;
+}
+
+.profile-content {
+  display: grid;
+  gap: 12px;
+}
+
+.account-card,
+.orders-card {
+  background: #f2f8f1;
+  border: 1px solid #dde9db;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.account-card h1 {
+  font-size: 37px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  color: #233024;
+  margin-bottom: 10px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #d8e4d6;
+  margin-bottom: 12px;
+}
+
+.tab {
+  border: none;
+  background: transparent;
+  color: #3f5242;
+  font-size: 13px;
+  padding: 8px 10px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tab.active {
+  color: #2a6a35;
+  border-bottom-color: #4aa550;
+  font-weight: 700;
+}
+
+.account-form {
+  display: grid;
+  gap: 8px;
+}
+
+.account-form label {
+  font-size: 13px;
+  color: #3f5041;
+  font-weight: 600;
+}
+
+.account-form input {
+  height: 36px;
+  border: 1px solid #ccdbca;
+  border-radius: 7px;
+  background: #f9fcf8;
+  padding: 0 10px;
+  font-size: 13px;
+  color: #2b362d;
+  outline: none;
+}
+
+.account-form button {
+  margin-top: 6px;
+  width: 170px;
+  height: 36px;
+  border: none;
+  border-radius: 7px;
+  background: #489c4d;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.orders-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.orders-head h2 {
+  font-size: 33px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 800;
+  color: #263727;
+  letter-spacing: 0.2px;
+}
+
+.orders-head a {
+  font-size: 13px;
+  color: #3a8e41;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.orders-table {
+  border: 1px solid #d8e4d7;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.order-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 10px;
+  font-size: 12px;
+  color: #3f4e40;
+  border-bottom: 1px solid #e0e9de;
+}
+
+.order-row:last-child {
+  border-bottom: none;
+}
+
+.order-head {
+  background: #e8f1e6;
+  font-weight: 700;
+  color: #2f402f;
+}
+
+.order-row .ok {
+  color: #2f8a39;
+  font-weight: 700;
+}
+
+.order-row .pending {
+  color: #b6781f;
+  font-weight: 700;
+}
+
+.address-list {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.address-item {
+  border: 1px solid #d3e1d2;
+  border-radius: 8px;
+  background: #f8fcf7;
+  padding: 10px;
+}
+
+.address-item.default {
+  border-color: #8dbf8f;
+  background: #f2f9f1;
+}
+
+.address-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.address-head h3 {
+  font-size: 14px;
+  color: #2f3e31;
+}
+
+.address-badge {
+  font-size: 11px;
+  color: #2f7f3a;
+  background: #e2f2df;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-weight: 700;
+}
+
+.address-line {
+  font-size: 12px;
+  color: #445545;
+  margin-bottom: 4px;
+}
+
+.address-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.address-actions button {
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  padding: 7px 10px;
+  color: #fff;
+  background: #4f9f53;
+  cursor: pointer;
+}
+
+.address-actions .ghost {
+  background: #7d8f7e;
+}
+
+.password-form {
+  max-width: 560px;
+}
+
+.security-note {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #4a5d4d;
+}
+
+.review-list {
+  display: grid;
+  gap: 12px;
+}
+
+.review-item {
+  border: 1px solid #d8e4d7;
+  border-radius: 10px;
+  background: #f7fbf6;
+  padding: 12px;
+}
+
+.review-product {
+  display: grid;
+  grid-template-columns: 82px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.review-product img {
+  width: 82px;
+  height: 82px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #d6e1d4;
+}
+
+.review-product h3 {
+  font-size: 15px;
+  color: #243426;
+  margin-bottom: 5px;
+}
+
+.review-product p {
+  font-size: 12px;
+  color: #4b5d4d;
+  margin-bottom: 3px;
+}
+
+.review-meta {
+  color: #6a7c6d;
+}
+
+.review-actions-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.buy-again-btn {
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: #3f9b47;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.review-form {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.review-form label {
+  font-size: 12px;
+  color: #3f5142;
+  font-weight: 700;
+}
+
+.star-picker {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.star-btn {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  color: #bcc9ba;
+  cursor: pointer;
+}
+
+.star-btn.active {
+  color: #f2b01e;
+}
+
+.rating-text {
+  margin-left: 6px;
+  font-size: 12px;
+  color: #4b5e4d;
+}
+
+.review-comment {
+  border: 1px solid #cedccf;
+  border-radius: 7px;
+  background: #fbfefb;
+  resize: vertical;
+  min-height: 88px;
+  padding: 9px 10px;
+  font-family: inherit;
+  font-size: 13px;
+  color: #2b3a2d;
+  outline: none;
+}
+
+.review-images {
+  font-size: 12px;
+  color: #3f5241;
+}
+
+.image-count {
+  font-size: 12px;
+  color: #657867;
+}
+
+.submit-review-btn {
+  width: 160px;
+  height: 36px;
+  border: none;
+  border-radius: 7px;
+  background: #4a9f4f;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submit-review-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.review-empty {
+  border: 1px dashed #c8d9c8;
+  border-radius: 8px;
+  padding: 18px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #617361;
+  background: #f7fbf6;
+}
+
+.site-footer {
+  width: 96%;
+  margin: 0 auto 16px;
+  padding: 18px 32px;
+  background: linear-gradient(90deg, #13301f, #284b32, #234729);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+}
+
+.footer-col {
+  position: relative;
+}
+
+.footer-col:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: -14px;
+  width: 1px;
+  height: 54px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.footer-col h3 {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.footer-col a {
+  display: block;
+  text-decoration: none;
+  color: #f4f4f4;
+  font-size: 11px;
+  margin-bottom: 7px;
+  opacity: 0.95;
+}
+
+.footer-col a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+@media (max-width: 1080px) {
+  .main-header {
+    height: auto;
+    padding: 12px 16px;
+    grid-template-columns: 1fr auto;
+    row-gap: 10px;
+  }
+
+  .search-box {
+    width: 100%;
+    max-width: none;
+    grid-column: 1 / -1;
+  }
+
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 780px) {
+  .order-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .review-product {
+    grid-template-columns: 1fr;
+  }
+
+  .site-footer {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-col:not(:last-child)::after {
+    display: none;
+  }
+}

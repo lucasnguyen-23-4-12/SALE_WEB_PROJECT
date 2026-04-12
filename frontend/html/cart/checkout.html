@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thanh toán - TAM TAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../../css/cart/checkout.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="top-strip"></div>
+    <div class="main-header">
+      <a href="../core/landing.html" class="logo-box" aria-label="Trang Landing">
+        <img src="../../images/modern-logo-with-gradient-squares.png" alt="TAM TAI Logo">
+      </a>
+
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" placeholder="Tìm kiếm sản phẩm">
+      </div>
+
+      <div class="header-icons">
+        <a href="../user/notification.html" aria-label="Thông báo"><i class="fa-solid fa-bell"></i></a>
+        <a href="cart.html" aria-label="Giỏ hàng"><i class="fa-solid fa-cart-shopping"></i></a>
+        <a href="../user/profile.html" aria-label="Tài khoản"><i class="fa-solid fa-user"></i></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+    <section class="breadcrumb-row">
+      <a href="../core/landing.html">Trang chủ</a>
+      <span>/</span>
+      <a href="cart.html">Giỏ hàng</a>
+      <span>/</span>
+      <strong>Thanh toán</strong>
+    </section>
+
+    <h1 class="page-title">THANH TOÁN ĐƠN HÀNG</h1>
+
+    <section class="checkout-layout">
+      <article class="checkout-form">
+        <h2>Thông tin giao hàng</h2>
+        <form>
+                    <div class="form-grid">
+            <label>
+              Họ và tên
+              <input type="text" placeholder="Nhập họ tên người nhận">
+            </label>
+            <label>
+              Số điện thoại
+              <input type="tel" placeholder="Nhập số điện thoại">
+            </label>
+            <label>
+              Email
+              <input type="email" placeholder="Nhập email">
+            </label>
+            <label>
+              Tỉnh/Thành phố
+              <select>
+                <option>Chọn tỉnh/thành phố</option>
+                <option>TP.HCM</option>
+                <option>Hà Nội</option>
+                <option>Đà Nẵng</option>
+              </select>
+            </label>
+          </div>
+
+          <label>
+            Địa chỉ chi tiết
+            <input type="text" placeholder="Số nhà, tên đường, phường/xã">
+          </label>
+
+          <label>
+            Ghi chú đơn hàng
+            <textarea rows="3" placeholder="Ghi chú thêm cho đơn hàng (không bắt buộc)"></textarea>
+          </label>
+        </form>
+
+        <div class="method-block">
+          <h3>Phương thức vận chuyển</h3>
+          <label class="method-item">
+            <input type="radio" name="shipping" checked>
+            <span>Giao nhanh trong ngày</span>
+            <strong>30.000đ</strong>
+          </label>
+          <label class="method-item">
+            <input type="radio" name="shipping">
+            <span>Giao tiêu chuẩn 2-3 ngày</span>
+            <strong>20.000đ</strong>
+          </label>
+        </div>
+
+        <div class="method-block">
+          <h3>Phương thức thanh toán</h3>
+          <label class="method-item">
+            <input type="radio" name="payment" checked>
+            <span>Thanh toán khi nhận hàng (COD)</span>
+          </label>
+          <label class="method-item">
+            <input type="radio" name="payment">
+            <span>Chuyển khoản ngân hàng</span>
+          </label>
+          <label class="method-item">
+            <input type="radio" name="payment">
+            <span>Ví điện tử (Momo, ZaloPay)</span>
+          </label>
+        </div>
+      </article>
+
+      <aside class="order-summary">
+        <h2>Tóm tắt đơn hàng</h2>
+
+        <div class="summary-item">
+          <div class="thumb"><img src="../../images/acer-refurbished-laptop-500x500.webp" alt="Laptop A1"></div>
+          <div class="meta">
+            <h3>Laptop Văn Phòng A1</h3>
+            <p>SL: 1</p>
+          </div>
+          <strong>15.900.000đ</strong>
+        </div>
+
+        <div class="summary-item">
+          <div class="thumb"></div>
+          <div class="meta">
+            <h3>Tai nghe Pro X</h3>
+            <p>SL: 2</p>
+          </div>
+          <strong>2.500.000đ</strong>
+        </div>
+
+        <div class="price-line">
+          <span>Tạm tính</span>
+          <strong>18.400.000đ</strong>
+        </div>
+        <div class="price-line">
+          <span>Phí vận chuyển</span>
+          <strong>30.000đ</strong>
+        </div>
+        <div class="price-line total">
+          <span>Tổng thanh toán</span>
+          <strong>18.430.000đ</strong>
+        </div>
+
+        <button class="confirm-btn">Xác nhận thanh toán</button>
+        <a href="cart.html" class="back-btn">Quay lại giỏ hàng</a>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-col">
+      <h3>Về Website</h3>
+      <a href="#">Dành ở đây</a>
+      <a href="#">Dành ở đây</a>
+    </div>
+    <div class="footer-col">
+      <h3>Liên kết</h3>
+      <a href="#">Dành ở đây</a>
+      <a href="#">Dành ở đây</a>
+    </div>
+    <div class="footer-col">
+      <h3>Hỗ trợ</h3>
+      <a href="#">Dành ở đây</a>
+      <a href="#">Dành ở đây</a>
+    </div>
+    <div class="footer-col">
+      <h3>Theo dõi</h3>
+      <a href="#">Dành ở đây</a>
+      <a href="#">Dành ở đây</a>
+    </div>
+  </footer>
+
+  <script src="../../js/core/common.js?v=20260408"></script>
+  <script src="../../js/cart/checkout.js?v=20260408e"></script>
+</body>
+</html>
+
+

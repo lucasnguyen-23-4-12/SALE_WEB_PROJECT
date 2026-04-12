@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đánh giá sản phẩm - TAM TAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../../css/user/profile.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="top-strip"></div>
+    <div class="main-header">
+      <a href="../core/landing.html" class="logo-box" aria-label="Trang Landing">
+        <img src="../../images/modern-logo-with-gradient-squares.png" alt="TAM TAI Logo">
+      </a>
+
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" placeholder="Tìm kiếm sản phẩm đã mua">
+      </div>
+
+      <div class="header-icons">
+        <a href="notification.html" aria-label="Thông báo"><i class="fa-solid fa-bell"></i></a>
+        <a href="../cart/cart.html" aria-label="Giỏ hàng"><i class="fa-solid fa-cart-shopping"></i></a>
+        <a href="profile.html" aria-label="Tài khoản"><i class="fa-solid fa-user"></i></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+    <section class="profile-layout">
+      <aside class="profile-sidebar">
+        <div class="profile-head">
+          <div class="avatar">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <h2>chưa có</h2>
+          <p>chưa có</p>
+        </div>
+
+        <nav class="menu-list">
+          <a href="profile.html"><i class="fa-solid fa-user"></i> Thông tin tài khoản</a>
+          <a href="address.html"><i class="fa-solid fa-location-dot"></i> Địa chỉ của tôi</a>
+          <a href="password.html"><i class="fa-solid fa-lock"></i> Mật khẩu</a>
+          <a href="../cart/all-orders.html"><i class="fa-solid fa-box"></i> Đơn hàng của tôi</a>
+          <a href="product-reviews.html" class="active"><i class="fa-solid fa-star"></i> Đánh giá sản phẩm</a>
+          <a href="../admin/admin.html" id="adminMenuLink" style="display: none;"><i class="fa-solid fa-screwdriver-wrench"></i> Trang quản trị</a>
+          <a href="#" class="logout-link" data-logout><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
+        </nav>
+      </aside>
+
+      <section class="profile-content">
+        <article class="orders-card">
+          <div class="orders-head">
+            <h2>Đánh giá sản phẩm đã mua</h2>
+            <a href="../cart/all-orders.html">Xem lịch sử đơn</a>
+          </div>
+
+          <div class="review-list" id="reviewList"></div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-col">
+      <h3>Về Website</h3>
+      <a href="#">Vận hành</a>
+      <a href="#">Điểm mua uy tín</a>
+      <a href="#">Tuyển dụng</a>
+    </div>
+    <div class="footer-col">
+      <h3>Liên kết</h3>
+      <a href="#">Diễn đàn</a>
+      <a href="#">Ưu đãi</a>
+      <a href="#">Tin tức</a>
+    </div>
+    <div class="footer-col">
+      <h3>Hỗ trợ</h3>
+      <a href="#">Liên hệ tư vấn</a>
+      <a href="#">Chính sách đổi trả</a>
+      <a href="#">Điều khoản</a>
+    </div>
+    <div class="footer-col">
+      <h3>Theo dõi</h3>
+      <a href="#">Facebook</a>
+      <a href="#">Instagram</a>
+      <a href="#">TikTok</a>
+    </div>
+  </footer>
+
+  <script src="../../js/core/common.js"></script>
+  <script src="../../js/user/product-reviews.js"></script>
+</body>
+</html>

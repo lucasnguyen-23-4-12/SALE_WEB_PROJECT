@@ -1,0 +1,282 @@
+﻿(function () {
+  var ordersData = window.TamTaiOrdersData;
+  if (!ordersData) {
+    return;
+  }
+
+  var filtersWrap = document.getElementById("ordersFilters");
+  var filterButtons = filtersWrap ? filtersWrap.querySelectorAll("button[data-status]") : [];
+  var searchInput = document.getElementById("orderSearch");
+  var ordersBody = document.getElementById("ordersBody");
+  var paginationWrap = document.getElementById("pagination");
+  var summaryEl = document.getElementById("ordersSummary");
+
+  var state = {
+    status: "all",
+    searchKeyword: "",
+    page: 1
+  };
+
+  function normalizeOrderId(orderId) {
+    return String(orderId || "")
+      .replace("#", "")
+      .trim()
+      .toUpperCase();
+  }
+
+  function parseMoney(value) {
+    if (typeof value === "number") {
+      return Number.isFinite(value) ? value : null;
+    }
+
+    if (typeof value === "string" && value.trim()) {
+      var parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    return null;
+  }
+
+  function formatDate(dateValue) {
+    if (!dateValue) {
+      return "chua co";
+    }
+
+    var date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) {
+      return "chua co";
+    }
+
+    var dd = String(date.getDate()).padStart(2, "0");
+    var mm = String(date.getMonth() + 1).padStart(2, "0");
+    var yyyy = date.getFullYear();
+    return dd + "/" + mm + "/" + yyyy;
+  }
+
+  function mapStatus(rawStatus) {
+    var normalized = String(rawStatus || "").trim().toLowerCase();
+    if (!normalized) {
+      return { key: "pending", label: "chua co", className: "pending" };
+    }
+    if (normalized.indexOf("deliver") !== -1 || normalized.indexOf("da giao") !== -1) {
+      return { key: "delivered", label: "Da giao", className: "delivered" };
+    }
+    if (normalized.indexOf("ship") !== -1 || normalized.indexOf("giao") !== -1) {
+      return { key: "shipping", label: "Dang giao", className: "shipping" };
+    }
+    if (normalized.indexOf("cancel") !== -1 || normalized.indexOf("huy") !== -1) {
+      return { key: "cancelled", label: "Da huy", className: "cancelled" };
+    }
+    if (normalized.indexOf("pend") !== -1 || normalized.indexOf("wait") !== -1 || normalized.indexOf("cho") !== -1) {
+      return { key: "pending", label: "Cho xac nhan", className: "pending" };
+    }
+    return { key: "pending", label: rawStatus, className: "pending" };
+  }
+
+  function toFrontendOrder(raw) {
+    var status = mapStatus(raw.status);
+    var items = Array.isArray(raw.items)
+      ? raw.items
+      : (Array.isArray(raw.order_items) ? raw.order_items : []);
+
+    var itemCount = items.reduce(function (sum, item) {
+      return sum + Math.max(0, Number(item.quantity || 0));
+    }, 0);
+
+    var total = parseMoney(raw.total_amount);
+    if (total === null) {
+      total = parseMoney(raw.total);
+    }
+
+    if (total === null && items.length) {
+      total = items.reduce(function (sum, item) {
+        var amount = parseMoney(item.amount);
+        if (amount === null) {
+          var qty = Math.max(0, Number(item.quantity || 0));
+          var unit = parseMoney(item.price_at_purchase);
+          if (unit === null) {
+            unit = parseMoney(item.unit_price || item.unitPrice);
+          }
+          amount = unit !== null ? unit * qty : 0;
+        }
+        return sum + amount;
+      }, 0);
+    }
+
+    return {
+      id: raw.order_id,
+      date: formatDate(raw.order_date),
+      itemCount: itemCount,
+      total: total,
+      status: status.key,
+      statusLabel: status.label,
+      statusClassName: status.className
+    };
+  }
+
+  async function loadOrdersFromBackend() {
+    var token = localStorage.getItem("access_token");
+    var role = TamTai.getRole();
+    if (!token || role !== "user") {
+      return;
+    }
+
+    try {
+      var response = await fetch(TamTai.API_BASE_URL + "/orders?skip=0&limit=100", {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      });
+
+      if (!response.ok) {
+        ordersData.orders = [];
+        return;
+      }
+
+      var payload = await response.json();
+      var rows = Array.isArray(payload) ? payload : [];
+      ordersData.orders = rows.map(toFrontendOrder);
+    } catch (error) {
+      ordersData.orders = [];
+    }
+  }
+
+  function filterOrders() {
+    return ordersData.orders.filter(function (order) {
+      var byStatus = state.status === "all" || order.status === state.status;
+      var normalizedId = normalizeOrderId(order.id);
+      var byKeyword = !state.searchKeyword || normalizedId.indexOf(state.searchKeyword) !== -1;
+      return byStatus && byKeyword;
+    });
+  }
+
+  function createOrderRow(order) {
+    var status = order.statusLabel
+      ? { label: order.statusLabel, className: order.statusClassName }
+      : (ordersData.statusMeta[order.status] || { label: "chua co", className: "pending" });
+
+    var hasItemCount = Number.isFinite(order.itemCount);
+    var itemText = hasItemCount ? (order.itemCount + " san pham") : "chua co";
+    var totalText = typeof order.total === "number" && Number.isFinite(order.total)
+      ? ordersData.formatCurrency(order.total)
+      : "chua co";
+
+    var repayLabel = order.status === "pending" ? "Thanh toan tiep" : "Mua lai";
+    var repayLink = order.status === "pending" ? "checkout.html" : "cart.html";
+
+    return [
+      '<div class="order-row">',
+      "  <span>#" + normalizeOrderId(order.id) + "</span>",
+      "  <span>" + order.date + "</span>",
+      "  <span>" + itemText + "</span>",
+      "  <span>" + totalText + "</span>",
+      '  <span class="status ' + status.className + '">' + status.label + "</span>",
+      '  <span class="actions">',
+      '    <a href="order-detail.html?id=' + encodeURIComponent(normalizeOrderId(order.id)) + '">Chi tiet</a>',
+      '    <a href="' + repayLink + '">' + repayLabel + "</a>",
+      "  </span>",
+      "</div>"
+    ].join("");
+  }
+
+  function renderPagination(totalItems, pageSize) {
+    var totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+    if (state.page > totalPages) {
+      state.page = totalPages;
+    }
+
+    var html = "";
+    html += '<button data-page="' + (state.page - 1) + '"' + (state.page === 1 ? " disabled" : "") + ">Truoc</button>";
+    for (var i = 1; i <= totalPages; i += 1) {
+      html += '<button data-page="' + i + '"' + (state.page === i ? ' class="active"' : "") + ">" + i + "</button>";
+    }
+    html += '<button data-page="' + (state.page + 1) + '"' + (state.page === totalPages ? " disabled" : "") + ">Sau</button>";
+    paginationWrap.innerHTML = html;
+  }
+
+  function renderSummary(totalItems, pageSize) {
+    if (!summaryEl) {
+      return;
+    }
+
+    if (totalItems === 0) {
+      summaryEl.textContent = "Hien thi 0 - 0 / 0 don hang";
+      return;
+    }
+
+    var start = (state.page - 1) * pageSize + 1;
+    var end = Math.min(state.page * pageSize, totalItems);
+    summaryEl.textContent = "Hien thi " + start + " - " + end + " / " + totalItems + " don hang";
+  }
+
+  function renderOrders() {
+    var pageSize = ordersData.defaultPageSize || 10;
+    var filteredOrders = filterOrders();
+    var totalPages = Math.max(1, Math.ceil(filteredOrders.length / pageSize));
+    if (state.page > totalPages) {
+      state.page = totalPages;
+    }
+
+    var startIndex = (state.page - 1) * pageSize;
+    var pagedOrders = filteredOrders.slice(startIndex, startIndex + pageSize);
+
+    if (!pagedOrders.length) {
+      ordersBody.innerHTML = '<div class="order-row order-empty">chua co don hang</div>';
+    } else {
+      ordersBody.innerHTML = pagedOrders.map(createOrderRow).join("");
+    }
+
+    renderSummary(filteredOrders.length, pageSize);
+    renderPagination(filteredOrders.length, pageSize);
+  }
+
+  function setActiveFilter() {
+    filterButtons.forEach(function (button) {
+      var isActive = button.getAttribute("data-status") === state.status;
+      button.classList.toggle("active", isActive);
+    });
+  }
+
+  function bindEvents() {
+    if (filtersWrap) {
+      filtersWrap.addEventListener("click", function (event) {
+        var target = event.target.closest("button[data-status]");
+        if (!target) {
+          return;
+        }
+        state.status = target.getAttribute("data-status");
+        state.page = 1;
+        setActiveFilter();
+        renderOrders();
+      });
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener("input", function () {
+        state.searchKeyword = normalizeOrderId(searchInput.value);
+        state.page = 1;
+        renderOrders();
+      });
+    }
+
+    if (paginationWrap) {
+      paginationWrap.addEventListener("click", function (event) {
+        var target = event.target.closest("button[data-page]");
+        if (!target || target.disabled) {
+          return;
+        }
+        state.page = Number(target.getAttribute("data-page")) || 1;
+        renderOrders();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", async function () {
+    await loadOrdersFromBackend();
+    bindEvents();
+    setActiveFilter();
+    renderOrders();
+  });
+})();
