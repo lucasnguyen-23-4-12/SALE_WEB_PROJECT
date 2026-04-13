@@ -43,6 +43,7 @@
     <!-- Reviews Section -->
     <section class="reviews-section">
         <h2>Đánh giá khách hàng</h2>
+        <div id="review-form-wrap" style="margin: 16px 0;"></div>
         <div class="reviews-container">
             <div class="reviews-summary">
                 <div class="rating-overview">
@@ -126,41 +127,36 @@
     <script>
         function getProductIdFromURL() {
             const params = new URLSearchParams(window.location.search);
-            return parseInt(params.get('id')) || 1;
+            return params.get('id');
+        }
+
+        function fmtDate(s) {
+            if (!s) return '';
+            try { return new Date(s).toLocaleString('vi-VN'); } catch { return String(s); }
         }
 
         async function renderProductDetail() {
             const productId = getProductIdFromURL();
-            let product = null;
-
-            try {
-                // Try to load from backend
-                product = await app.loadProduct(productId);
-            } catch (err) {
-                console.warn('Could not load product from backend, using mock', err);
-                // Fallback to mock
-                product = mockProducts.find(p => p.product_id === productId);
+            if (!productId) {
+                document.getElementById('product-detail').innerHTML = '<p>Thiếu tham số <code>id</code>.</p>';
+                return null;
             }
 
-            if (!product) {
-                document.getElementById('product-detail').innerHTML = '<p>Sản phẩm không tìm thấy</p>';
-                return;
-            }
-
+            const product = await app.getProductById(productId);
             document.getElementById('breadcrumb-name').textContent = product.product_name;
 
-            // Calculate original_price if not present
-            const unit = parseFloat(product.unit_price) || 0;
-            const discount = parseFloat(product.discount_percent) || 0;
-            const original = unit / (1 - discount / 100) || unit;
+            const unit = Number(product.unit_price) || 0;
+            const discount = Number(product.discount_percent) || 0;
+            const original = discount > 0 ? unit / (1 - discount / 100) : unit;
             const saved = original - unit;
+            const categoryName = await app.categoryNameById(product.category_id);
 
             const html = `
                 <div class="product-detail-wrapper">
                     <div class="product-images">
                         <div class="main-image">
                             <img id="main-image" src="https://via.placeholder.com/500x500?text=${encodeURIComponent(product.product_name)}" alt="${product.product_name}">
-                            <span class="product-badge">-${product.discount_percent}%</span>
+                            <span class="product-badge">-${discount}%</span>
                         </div>
                         <div class="thumbnail-images">
                             <img src="https://via.placeholder.com/80x80?text=1" alt="Thumbnail 1" class="thumbnail" onclick="document.getElementById('main-image').src=this.src">
@@ -172,7 +168,7 @@
 
                     <div class="product-details">
                         <h1>${product.product_name}</h1>
-                        <p class="product-category">Danh mục: ${product.category_name}</p>
+                        <p class="product-category">Danh mục: ${categoryName}</p>
                         
                         <div class="product-rating">
                             <span class="stars">⭐ ${product.rating_avg}/5</span>
@@ -197,22 +193,12 @@
 
                         <div class="product-actions">
                             <button class="btn btn-primary btn-large" id="add-to-cart">🛒 Thêm vào giỏ hàng</button>
-                            <button class="btn btn-secondary btn-large">❤️ Yêu thích</button>
+                            <button class="btn btn-secondary btn-large" id="wishlist-btn">❤️ Yêu thích</button>
                         </div>
 
                         <div class="product-info-box">
                             <h3>Thông tin chi tiết</h3>
                             <p>${product.description || 'Sản phẩm chất lượng cao, bảo hành chính hãng.'}</p>
-                        </div>
-
-                        <div class="product-safe-box">
-                            <h3>🛡️ Cam kết an toàn</h3>
-                            <ul>
-                                <li>✓ Chính hãng 100%</li>
-                                <li>✓ Bảo hành 12 tháng</li>
-                                <li>✓ Giao hàng nhanh 24 giờ</li>
-                                <li>✓ Hoàn tiền nếu không hài lòng</li>
-                            </ul>
                         </div>
                     </div>
                 </div>
@@ -220,81 +206,173 @@
 
             document.getElementById('product-detail').innerHTML = html;
 
-            // Quantity controls
             document.getElementById('qty-minus').addEventListener('click', function() {
                 const input = document.getElementById('qty-input');
-                if (input.value > 1) input.value--;
+                if (Number(input.value) > 1) input.value = String(Number(input.value) - 1);
             });
 
             document.getElementById('qty-plus').addEventListener('click', function() {
                 const input = document.getElementById('qty-input');
-                if (input.value < 10) input.value++;
+                if (Number(input.value) < 10) input.value = String(Number(input.value) + 1);
             });
 
-            // Add to cart
             document.getElementById('add-to-cart').addEventListener('click', function() {
-                const quantity = parseInt(document.getElementById('qty-input').value);
-                addToCart(product, quantity);
+                const quantity = parseInt(document.getElementById('qty-input').value, 10) || 1;
+                app.addToCart(product, quantity);
                 alert(`Đã thêm ${quantity} x ${product.product_name} vào giỏ hàng!`);
             });
-        }
 
-        function renderRelatedProducts() {
-            const productId = getProductIdFromURL();
-            let product = mockProducts.find(p => p.product_id === productId);
-            let related = [];
+            const wishlistBtn = document.getElementById('wishlist-btn');
+            let currentWishlistItem = null;
 
-            if (product) {
-                related = mockProducts.filter(p => p.category_id === product.category_id && p.product_id !== productId).slice(0, 4);
+            async function refreshWishlistState() {
+                currentWishlistItem = null;
+                if (!app.getToken()) {
+                    wishlistBtn.textContent = "❤️ Đăng nhập để yêu thích";
+                    return;
+                }
+                const list = await app.getMyWishlist();
+                currentWishlistItem = (list || []).find(w => String(w.product_id) === String(product.product_id)) || null;
+                wishlistBtn.textContent = currentWishlistItem ? "💔 Bỏ yêu thích" : "❤️ Yêu thích";
             }
 
-            const grid = document.getElementById('related-grid');
-            grid.innerHTML = related.map(p => `
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="https://via.placeholder.com/250x250?text=${encodeURIComponent(p.product_name)}" alt="${p.product_name}">
-                        <span class="product-badge">-${p.discount_percent}%</span>
-                    </div>
-                    <div class="product-info">
-                        <h3>${p.product_name}</h3>
-                        <p class="product-category">${p.category_name}</p>
-                        <div class="product-rating">⭐ ${p.rating_avg}/5</div>
-                        <div class="product-price">
-                            <span class="original-price">${p.original_price.toLocaleString('vi-VN')}đ</span>
-                            <span class="sale-price">${p.unit_price.toLocaleString('vi-VN')}đ</span>
+            wishlistBtn.addEventListener('click', async function() {
+                if (!app.requireLoginOrRedirect()) return;
+                try {
+                    if (currentWishlistItem) await app.removeWishlistItem(currentWishlistItem.wishlist_id);
+                    else await app.addWishlistItem(product.product_id);
+                    await refreshWishlistState();
+                } catch (e) {
+                    console.error(e);
+                    alert("Không thể cập nhật wishlist: " + e.message);
+                }
+            });
+
+            await refreshWishlistState();
+            return product;
+        }
+
+        async function renderRelatedProducts(product) {
+            try {
+                const products = await app.getProducts({ skip: 0, limit: 100 });
+                const related = (products || [])
+                    .filter(p => String(p.category_id) === String(product.category_id) && String(p.product_id) !== String(product.product_id))
+                    .slice(0, 4);
+
+                const grid = document.getElementById('related-grid');
+                grid.innerHTML = await Promise.all(related.map(async p => {
+                    const unit = Number(p.unit_price) || 0;
+                    const discount = Number(p.discount_percent) || 0;
+                    const original = discount > 0 ? unit / (1 - discount / 100) : unit;
+                    const categoryName = await app.categoryNameById(p.category_id);
+                    return `
+                        <div class="product-card">
+                            <div class="product-image">
+                                <img src="https://via.placeholder.com/250x250?text=${encodeURIComponent(p.product_name)}" alt="${p.product_name}">
+                                <span class="product-badge">-${discount}%</span>
+                            </div>
+                            <div class="product-info">
+                                <h3>${p.product_name}</h3>
+                                <p class="product-category">${categoryName}</p>
+                                <div class="product-rating">⭐ ${p.rating_avg}/5</div>
+                                <div class="product-price">
+                                    <span class="original-price">${original.toLocaleString('vi-VN')}đ</span>
+                                    <span class="sale-price">${unit.toLocaleString('vi-VN')}đ</span>
+                                </div>
+                                <a href="product-detail.html?id=${p.product_id}" class="btn btn-small">Xem chi tiết</a>
+                            </div>
                         </div>
-                        <a href="product-detail.html?id=${p.product_id}" class="btn btn-small">Xem chi tiết</a>
-                    </div>
-                </div>
-            `).join('');
+                    `;
+                })).then(parts => parts.join(''));
+            } catch (e) {
+                console.warn("Failed to load related products", e);
+                document.getElementById('related-grid').innerHTML = '<p style="grid-column: 1/-1; text-align:center;">Không tải được sản phẩm liên quan.</p>';
+            }
         }
 
-        // Load sample reviews
-        function renderReviews() {
-            const mockReviews = [
-                { author: 'Nguyễn Văn A', rating: 5, date: '2 tuần trước', comment: 'Sản phẩm tuyệt vời, giao hàng nhanh!' },
-                { author: 'Trần Thị B', rating: 5, date: '3 tuần trước', comment: 'Rất hài lòng, sẽ mua lại!' },
-                { author: 'Phạm Văn C', rating: 4, date: '1 tháng trước', comment: 'Tốt, nhưng giá hơi cao' }
-            ];
+        async function renderReviews(productId) {
+            const list = document.getElementById('reviews-list');
+            list.innerHTML = '<p>Đang tải đánh giá...</p>';
+            try {
+                const reviews = await app.getReviewsByProduct(productId);
+                const count = (reviews || []).length;
+                document.getElementById('review-count').textContent = `${count} đánh giá`;
 
-            const reviewsList = document.getElementById('reviews-list');
-            reviewsList.innerHTML = mockReviews.map(review => `
-                <div class="review-item">
-                    <div class="review-header">
-                        <span class="review-author">${review.author}</span>
-                        <span class="review-rating">${'⭐'.repeat(review.rating)}</span>
+                list.innerHTML = (reviews || []).map(r => `
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-author">Customer #${r.customer_id}</span>
+                            <span class="review-rating">${'⭐'.repeat(Number(r.rating) || 0)}</span>
+                        </div>
+                        <div class="review-date">${fmtDate(r.created_at)}</div>
+                        <p class="review-comment">${r.comment || ''}</p>
                     </div>
-                    <div class="review-date">${review.date}</div>
-                    <p class="review-comment">${review.comment}</p>
-                </div>
-            `).join('');
+                `).join('') || '<p>Chưa có đánh giá nào.</p>';
+            } catch (e) {
+                console.error(e);
+                list.innerHTML = '<p style="color:#c0392b;">Không tải được đánh giá.</p>';
+            }
         }
 
-        // Initialize
+        function renderReviewForm(productId) {
+            const wrap = document.getElementById('review-form-wrap');
+            if (!app.getToken()) {
+                wrap.innerHTML = '<p>Bạn cần <a href="customer-login.html">đăng nhập</a> để đánh giá sản phẩm.</p>';
+                return;
+            }
+
+            wrap.innerHTML = `
+                <div class="auth-form" style="max-width: 700px; margin: 0;">
+                    <h3>Viết đánh giá</h3>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 0 0 200px;">
+                            <label>Rating (1-5)</label>
+                            <select id="review-rating">
+                                <option value="5">5</option>
+                                <option value="4">4</option>
+                                <option value="3">3</option>
+                                <option value="2">2</option>
+                                <option value="1">1</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Bình luận</label>
+                            <input id="review-comment" type="text" placeholder="Chia sẻ cảm nhận của bạn...">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="review-submit" type="button">Gửi đánh giá</button>
+                </div>
+            `;
+
+            document.getElementById('review-submit').addEventListener('click', async function() {
+                try {
+                    const rating = parseInt(document.getElementById('review-rating').value, 10);
+                    const comment = document.getElementById('review-comment').value || null;
+                    const customerId = app.getCustomerIdFromToken();
+                    await app.createReview({ product_id: String(productId), customer_id: String(customerId), rating, comment });
+                    document.getElementById('review-comment').value = "";
+                    await renderReviews(productId);
+                    alert("✓ Đã gửi đánh giá");
+                } catch (e) {
+                    console.error(e);
+                    alert("Không thể gửi đánh giá: " + e.message);
+                }
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', async function() {
-            await renderProductDetail();
-            renderRelatedProducts();
-            renderReviews();
+            try {
+                const product = await renderProductDetail();
+                if (product) {
+                    document.getElementById('avg-rating').textContent = String(product.rating_avg ?? "0");
+                    renderReviewForm(product.product_id);
+                    await renderReviews(product.product_id);
+                    await renderRelatedProducts(product);
+                }
+            } catch (e) {
+                console.error(e);
+                document.getElementById('product-detail').innerHTML = '<p style="color:#c0392b;">Không tải được sản phẩm.</p>';
+            }
         });
     </script>
 </body>

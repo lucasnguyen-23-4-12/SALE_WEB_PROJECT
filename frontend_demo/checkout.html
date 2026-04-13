@@ -111,47 +111,12 @@
             <div class="checkout-section" id="step-2">
                 <h2>2. Phương thức thanh toán</h2>
 
-                <div class="payment-methods">
-                    <div class="payment-option">
-                        <input type="radio" name="payment" value="cod" id="payment-cod" checked>
-                        <label for="payment-cod">
-                            <span class="payment-title">💵 Thanh toán khi nhận hàng (COD)</span>
-                            <span class="payment-desc">Không phí, thanh toán trực tiếp cho người giao hàng</span>
-                        </label>
-                    </div>
-
-                    <div class="payment-option">
-                        <input type="radio" name="payment" value="debit" id="payment-debit">
-                        <label for="payment-debit">
-                            <span class="payment-title">💳 Thẻ ghi nợ / Tín dụng</span>
-                            <span class="payment-desc">Thanh toán an toàn qua cổng VNPAY</span>
-                        </label>
-                    </div>
-
-                    <div class="payment-option">
-                        <input type="radio" name="payment" value="bank" id="payment-bank">
-                        <label for="payment-bank">
-                            <span class="payment-title">🏦 Chuyển khoản ngân hàng</span>
-                            <span class="payment-desc">Chuyển tiền vào tài khoản ngân hàng của cửa hàng</span>
-                        </label>
-                    </div>
-
-                    <div class="payment-option">
-                        <input type="radio" name="payment" value="ewallet" id="payment-ewallet">
-                        <label for="payment-ewallet">
-                            <span class="payment-title">📱 Ví điện tử</span>
-                            <span class="payment-desc">Momo, ZaloPay, PayPal,...</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Bank Details (hidden by default) -->
-                <div id="bank-details" style="display: none;">
-                    <h3>Thông tin chuyển khoản</h3>
-                    <p><strong>Ngân hàng:</strong> Vietcombank</p>
-                    <p><strong>Tên tài khoản:</strong> TECH STORE</p>
-                    <p><strong>Số tài khoản:</strong> 1234567890</p>
-                    <p><strong>Nội dung chuyển:</strong> <span id="order-ref">ĐH-001</span></p>
+                <div class="form-group">
+                    <label>Chọn phương thức thanh toán *</label>
+                    <select id="payment-method-select" required>
+                        <option value="">Đang tải...</option>
+                    </select>
+                    <p id="payment-method-hint" style="margin-top: 8px; color: #666;"></p>
                 </div>
 
                 <div class="button-group">
@@ -368,6 +333,11 @@
         }
 
         function validateStep2() {
+            const sel = document.getElementById('payment-method-select');
+            if (!sel || !sel.value) {
+                alert('❌ Vui lòng chọn Phương thức thanh toán!');
+                return false;
+            }
             return true;
         }
 
@@ -383,20 +353,10 @@
                     document.getElementById('customer-district').value + ', ' +
                     document.getElementById('customer-city').value;
 
-                // Update payment method
-                const paymentRadio = document.querySelector('input[name="payment"]:checked');
-                if (!paymentRadio) {
-                    console.log('⚠️ No payment method selected');
-                    return;
-                }
-                const payment = paymentRadio.value;
-                const paymentText = {
-                    'cod': 'Thanh toán khi nhận hàng',
-                    'debit': 'Thẻ ghi nợ / Tín dụng',
-                    'bank': 'Chuyển khoản ngân hàng',
-                    'ewallet': 'Ví điện tử'
-                };
-                document.getElementById('confirm-payment').textContent = paymentText[payment];
+                // Update payment method (from backend list)
+                const sel = document.getElementById('payment-method-select');
+                const label = sel && sel.selectedOptions && sel.selectedOptions[0] ? sel.selectedOptions[0].textContent : '-';
+                document.getElementById('confirm-payment').textContent = label;
 
                 // Update order items
                 const cart = app.getCart();
@@ -436,46 +396,43 @@
                 return;
             }
 
-            // Build order payload matching backend field names
-            const cartItems = app.getCart().map(item => ({
-                product_id: item.product_id,
-                quantity: item.quantity,
-                price_at_purchase: item.unit_price
-            }));
-
-            console.log('Cart items:', cartItems);
-
-            const shipping = document.getElementById('confirm-shipping').textContent === 'Miễn phí' ? 0 : 25000;
-
-            // Lấy customer_id từ user đã đăng nhập
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            const customerId = user.customer_id || null;
-
-            console.log('User info:', user);
-            console.log('Customer ID:', customerId);
-
-            if (!customerId) {
-                alert('⚠️ Vui lòng đăng nhập trước khi đặt hàng!');
-                window.location.href = 'customer-login.html';
-                return;
-            }
-
-            // Tạo payment method trước
-            const paymentMethodData = {
-                mode_name: 'Credit Card',
-                pay_date: null
-            };
-
             try {
-                console.log('Creating payment method...');
-                const paymentMethod = await app.createPaymentMethod(paymentMethodData);
-                console.log('Payment method created:', paymentMethod);
-                const paymentMethodId = paymentMethod.payment_method_id;
+                if (!app.requireLoginOrRedirect()) return;
+
+                const customerId = app.getCustomerIdFromToken();
+                if (!customerId) throw new Error('Không lấy được customer_id từ token');
+
+                const sel = document.getElementById('payment-method-select');
+                const paymentMethodId = sel ? sel.value : '';
+                if (!paymentMethodId) {
+                    alert('⚠️ Vui lòng chọn phương thức thanh toán!');
+                    return;
+                }
+
+                const cart = app.getCart();
+                if (!cart.length) {
+                    alert('⚠️ Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi đặt hàng!');
+                    window.location.href = 'products.html';
+                    return;
+                }
+
+                // Create/Save address into DB (optional but useful for DB verification)
+                await app.createAddress({
+                    customer_id: String(customerId),
+                    street: document.getElementById('customer-address').value || null,
+                    city: document.getElementById('customer-city').value || null,
+                    district: document.getElementById('customer-district').value || null,
+                    zipcode: document.getElementById('customer-zipcode').value || null,
+                    is_default: 1,
+                });
 
                 const orderPayload = {
-                    customer_id: customerId,
-                    payment_method_id: paymentMethodId,
-                    items: cartItems
+                    customer_id: String(customerId),
+                    payment_method_id: String(paymentMethodId),
+                    items: cart.map(item => ({
+                        product_id: String(item.product_id),
+                        quantity: Number(item.quantity) || 1
+                    }))
                 };
 
                 console.log('Order payload:', orderPayload);
@@ -490,35 +447,56 @@
 
         async function submitOrderToBackend(orderPayload) {
             try {
-                const response = await app.submitOrder(orderPayload);
+                const response = await app.createOrder(orderPayload);
                 console.log('Order created:', response);
                 
                 // Clear cart and show success
-                localStorage.removeItem('cart');
+                app.clearCart();
                 const orderId = response.order_id || response.id || Math.floor(Math.random() * 1000000);
                 
-                alert('✓ Đặt hàng thành công!\n\nMã đơn hàng: ' + orderId + '\n\nKiểm tra email để nhận xác nhận chi tiết.');
-                window.location.href = 'index.html';
+                alert('✓ Đặt hàng thành công!\n\nMã đơn hàng: ' + orderId);
+                window.location.href = 'customer-login.html';
             } catch (err) {
                 console.error('Failed to submit order:', err);
-                alert('⚠️ Không thể gửi đơn hàng. Sẽ lưu trữ cục bộ.\n\nVui lòng thử lại sau.');
+                alert('⚠️ Không thể gửi đơn hàng.\n\nChi tiết: ' + err.message);
             }
         }
 
-        // Toggle bank details visibility
-        document.addEventListener('change', function(e) {
-            if (e.target.name === 'payment') {
-                const bankDetails = document.getElementById('bank-details');
-                if (e.target.value === 'bank') {
-                    bankDetails.style.display = 'block';
-                } else {
-                    bankDetails.style.display = 'none';
-                }
-            }
-        });
-
         // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Pre-fill from customer profile (if logged in)
+            try {
+                if (app.getToken()) {
+                    const profile = await app.getMyProfile();
+                    app.saveUserProfile(profile);
+                    document.getElementById('customer-name').value = profile.customer_name || '';
+                    document.getElementById('customer-email').value = profile.customer_email || '';
+                    document.getElementById('customer-phone').value = profile.phone_number || '';
+                    document.getElementById('customer-address').value = profile.address || '';
+                }
+            } catch (e) {
+                console.warn('Could not prefill profile', e);
+            }
+
+            // Load payment methods from backend
+            const hint = document.getElementById('payment-method-hint');
+            const sel = document.getElementById('payment-method-select');
+            try {
+                const methods = await app.getPaymentMethods({ skip: 0, limit: 100 });
+                sel.innerHTML = '<option value=\"\">-- Chọn --</option>' + (methods || []).map(m => `
+                    <option value="${m.payment_method_id}">${m.mode_name}</option>
+                `).join('');
+                if (!methods || !methods.length) {
+                    hint.textContent = 'Chưa có payment method trong DB. Admin cần tạo ít nhất 1 payment method.';
+                } else {
+                    hint.textContent = '';
+                }
+            } catch (e) {
+                console.warn('Failed to load payment methods', e);
+                sel.innerHTML = '<option value=\"\">Không tải được</option>';
+                hint.textContent = 'Không tải được payment method từ backend.';
+            }
+
             updateStep3();
         });
     </script>

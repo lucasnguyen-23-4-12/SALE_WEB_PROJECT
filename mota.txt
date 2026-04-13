@@ -1,0 +1,33 @@
+MÔ TẢ DỰ ÁN (SALE WEB PROJECT)
+
+I. Ý tưởng
+- Dự án hướng đến việc xây dựng một website bán hàng (thương mại điện tử) quy mô nhỏ/ vừa, cho phép người dùng xem sản phẩm, tìm kiếm/lọc theo danh mục, thêm vào giỏ hàng và đặt mua trực tuyến.
+- Em chọn đề tài này vì đây là một bài toán thực tế, thường gặp trong doanh nghiệp, có đầy đủ các nghiệp vụ nền tảng (quản lý sản phẩm, đơn hàng, khách hàng, phân quyền) và phù hợp để rèn luyện kỹ năng thiết kế hệ thống, xây dựng API và triển khai giao diện web.
+- Điểm khác biệt so với các phần mềm bán hàng phổ biến:
+  + Tập trung vào một quy trình gọn, dễ sử dụng, phù hợp cho cửa hàng nhỏ (ít thao tác, giao diện trực quan).
+  + Thiết kế theo hướng tách riêng phần quản trị (Admin) và phần khách hàng (User), đảm bảo phân quyền rõ ràng.
+  + Có khả năng mở rộng về sau (bổ sung khuyến mãi, thống kê, thanh toán, vận chuyển) nhờ cấu trúc module và API chuẩn.
+
+II. Chi tiết (mô tả nghiệp vụ chính)
+1) Đối tượng sử dụng
+- Khách hàng: xem sản phẩm, đăng ký/đăng nhập, quản lý thông tin cá nhân, đặt hàng.
+- Quản trị viên (Admin): quản lý sản phẩm, danh mục, tồn kho, đơn hàng, người dùng; theo dõi thống kê cơ bản.
+
+2) Nghiệp vụ phía khách hàng
+- Duyệt danh sách sản phẩm: xem theo danh mục, tìm kiếm theo tên, lọc theo mức giá/thuộc tính cơ bản.
+- Xem chi tiết sản phẩm: hình ảnh, mô tả, giá bán, số lượng còn, đánh giá/ghi chú (nếu có).
+- Giỏ hàng: thêm/xóa sản phẩm, cập nhật số lượng, tự động tính tổng tiền.
+- Đặt hàng: nhập thông tin nhận hàng, xác nhận đơn, theo dõi trạng thái (mới tạo/đang xử lý/đã giao/đã hủy).
+- Tài khoản: đăng ký, đăng nhập/đăng xuất; cập nhật thông tin cá nhân; xem lịch sử mua hàng.
+
+3) Nghiệp vụ phía quản trị (Admin)
+- Quản lý danh mục: thêm/sửa/xóa danh mục, sắp xếp hiển thị.
+- Quản lý sản phẩm: thêm/sửa/xóa sản phẩm; cập nhật giá, hình ảnh; quản lý tồn kho.
+- Quản lý đơn hàng: xem danh sách đơn; xác nhận/đổi trạng thái; ghi chú xử lý; kiểm soát hủy đơn.
+- Quản lý người dùng: xem danh sách, khóa/mở khóa tài khoản; phân quyền cơ bản (user/admin).
+- Báo cáo – thống kê cơ bản: số đơn theo ngày/tháng, doanh thu ước tính, top sản phẩm bán chạy (mức tổng quan).
+
+4) Yêu cầu hệ thống (tổng quan)
+- Dữ liệu được lưu trữ tập trung (cơ sở dữ liệu), đảm bảo tính nhất quán khi phát sinh đơn hàng và cập nhật tồn kho.
+- Bảo mật ở mức cơ bản: xác thực đăng nhập, phân quyền chức năng; hạn chế truy cập trái phép vào khu vực quản trị.
+- Giao diện thân thiện và tương thích nhiều thiết bị (responsive) để người dùng có thể thao tác trên cả máy tính và điện thoại.

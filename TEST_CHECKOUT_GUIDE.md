@@ -1,6 +1,6 @@
 # 🛒 HƯỚNG DẪN TEST THANH TOÁN - CHECKOUT FLOW
 
-## ✅ NHỮNG GÌ ĐÃ SỬA
+## ✅ NHỮNG GÌ ĐÃ SỬA.....
 
 ### Vấn đề được phát hiện và xử lý:
 1. ❌ **Hàm `validateStep1()` không kiểm tra đầy đủ** 

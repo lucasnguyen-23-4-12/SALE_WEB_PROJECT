@@ -34,32 +34,7 @@
     <!-- Featured Categories -->
     <section class="categories-section">
         <h2>Danh mục sản phẩm</h2>
-        <div class="categories-grid">
-            <div class="category-card">
-                <div class="category-icon">📱</div>
-                <h3>Điện thoại</h3>
-                <p>Các điện thoại thông minh mới nhất</p>
-                <a href="products.html?category=smartphones" class="btn-link">Xem chi tiết →</a>
-            </div>
-            <div class="category-card">
-                <div class="category-icon">💻</div>
-                <h3>Máy tính</h3>
-                <p>Laptop và PC hiệu suất cao</p>
-                <a href="products.html?category=computers" class="btn-link">Xem chi tiết →</a>
-            </div>
-            <div class="category-card">
-                <div class="category-icon">🎧</div>
-                <h3>Phụ kiện</h3>
-                <p>Tai nghe, sạc, cáp chất lượng</p>
-                <a href="products.html?category=accessories" class="btn-link">Xem chi tiết →</a>
-            </div>
-            <div class="category-card">
-                <div class="category-icon">⌚</div>
-                <h3>Đồng hồ thông minh</h3>
-                <p>Smartwatch và wearables</p>
-                <a href="products.html?category=wearables" class="btn-link">Xem chi tiết →</a>
-            </div>
-        </div>
+        <div class="categories-grid" id="categories-grid"></div>
     </section>
 
     <!-- Featured Products -->
@@ -117,37 +92,43 @@
 
     <script src="js/app.js"></script>
     <script>
-        // Load featured products from backend or mock
         document.addEventListener('DOMContentLoaded', async function() {
             const featuredContainer = document.getElementById('featured-products');
+            const categoriesContainer = document.getElementById('categories-grid');
             try {
-                // Load from backend
-                const allProducts = await app.loadProductList(0, 12);
-                const featuredProducts = allProducts.slice(0, 4);
-                renderFeatured(featuredProducts);
+                const categories = await app.getCategories();
+                categoriesContainer.innerHTML = (categories || []).slice(0, 4).map(c => `
+                    <div class="category-card">
+                        <div class="category-icon">${app.pickCategoryIcon(c.category_name)}</div>
+                        <h3>${c.category_name}</h3>
+                        <p>${c.subcategory || 'Khám phá sản phẩm theo danh mục'}</p>
+                        <a href="products.html?category_id=${encodeURIComponent(c.category_id)}" class="btn-link">Xem chi tiết →</a>
+                    </div>
+                `).join('');
+
+                const allProducts = await app.getProducts({ skip: 0, limit: 12 });
+                renderFeatured((allProducts || []).slice(0, 4));
             } catch (err) {
                 console.error('Failed to load from backend:', err);
-                // Fallback to mock
-                const featuredProducts = mockProducts.slice(0, 4);
-                renderFeatured(featuredProducts);
+                featuredContainer.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">Không tải được dữ liệu từ backend. Hãy chắc chắn backend đang chạy tại <code>http://127.0.0.1:8000</code>.</p>';
+                categoriesContainer.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">Không tải được danh mục.</p>';
             }
             
-            function renderFeatured(featuredProducts) {
-                featuredContainer.innerHTML = featuredProducts.map(product => {
-                    // Calculate original_price if not present
-                    const unit = parseFloat(product.unit_price) || 0;
-                    const discount = parseFloat(product.discount_percent) || 0;
-                    const original = unit / (1 - discount / 100) || unit;
-                    
+            async function renderFeatured(featuredProducts) {
+                featuredContainer.innerHTML = await Promise.all((featuredProducts || []).map(async product => {
+                    const unit = Number(product.unit_price) || 0;
+                    const discount = Number(product.discount_percent) || 0;
+                    const original = discount > 0 ? unit / (1 - discount / 100) : unit;
+                    const categoryName = await app.categoryNameById(product.category_id);
                     return `
                 <div class="product-card">
                     <div class="product-image">
                         <img src="https://via.placeholder.com/250x250?text=${encodeURIComponent(product.product_name)}" alt="${product.product_name}">
-                        <span class="product-badge">-${product.discount_percent}%</span>
+                        <span class="product-badge">-${discount}%</span>
                     </div>
                     <div class="product-info">
                         <h3>${product.product_name}</h3>
-                        <p class="product-category">${product.category_name}</p>
+                        <p class="product-category">${categoryName}</p>
                         <div class="product-rating">⭐ ${product.rating_avg}/5 (${product.total_reviews} đánh giá)</div>
                         <div class="product-price">
                             <span class="original-price">${original.toLocaleString('vi-VN')}đ</span>
@@ -157,7 +138,7 @@
                     </div>
                 </div>
             `;
-                }).join('');
+                })).then(parts => parts.join(''));
             }
         });
     </script>

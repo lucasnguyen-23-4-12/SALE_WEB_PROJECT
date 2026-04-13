@@ -148,7 +148,7 @@
     <script src="js/app.js"></script>
     <script>
         function renderCart() {
-            const cart = getCart();
+            const cart = app.getCart();
             const cartEmpty = document.getElementById('cart-empty');
             const cartContent = document.getElementById('cart-content');
 
@@ -174,7 +174,7 @@
                                 <img src="https://via.placeholder.com/80x80?text=${encodeURIComponent(item.product_name)}" alt="${item.product_name}">
                                 <div>
                                     <h4>${item.product_name}</h4>
-                                    <p>${item.category_name}</p>
+                                    <p>${item.category_name || item.category_id}</p>
                                 </div>
                             </div>
                         </td>
@@ -214,19 +214,19 @@
                 removeFromCart(index);
                 return;
             }
-            const cart = getCart();
+            const cart = app.getCart();
             cart[index].quantity = newQty;
             localStorage.setItem('cart', JSON.stringify(cart));
             renderCart();
-            updateCartCount();
+            app.updateCartCount();
         }
 
         function removeFromCart(index) {
-            const cart = getCart();
+            const cart = app.getCart();
             cart.splice(index, 1);
             localStorage.setItem('cart', JSON.stringify(cart));
             renderCart();
-            updateCartCount();
+            app.updateCartCount();
         }
 
         function applyPromo() {
@@ -234,33 +234,48 @@
             alert('Mã khuyến mãi "' + promoCode + '" không hợp lệ. (Demo mode)');
         }
 
-        function renderRecommended() {
-            const cart = getCart();
-            const cartCategories = cart.map(item => item.category_name);
-            const recommended = mockProducts
-                .filter(p => cartCategories.includes(p.category_name))
-                .filter(p => !cart.some(item => item.product_id === p.product_id))
-                .slice(0, 4);
+        async function renderRecommended() {
+            const cart = app.getCart();
+            if (!cart.length) return;
 
-            const grid = document.getElementById('recommended-products');
-            grid.innerHTML = recommended.map(product => `
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="https://via.placeholder.com/250x250?text=${encodeURIComponent(product.product_name)}" alt="${product.product_name}">
-                        <span class="product-badge">-${product.discount_percent}%</span>
-                    </div>
-                    <div class="product-info">
-                        <h3>${product.product_name}</h3>
-                        <p class="product-category">${product.category_name}</p>
-                        <div class="product-rating">⭐ ${product.rating_avg}/5</div>
-                        <div class="product-price">
-                            <span class="original-price">${product.original_price.toLocaleString('vi-VN')}đ</span>
-                            <span class="sale-price">${product.unit_price.toLocaleString('vi-VN')}đ</span>
+            const cartCategoryIds = cart.map(item => String(item.category_id));
+            try {
+                const products = await app.getProducts({ skip: 0, limit: 100 });
+                const categories = await app.getCategories();
+                const categoryMap = Object.fromEntries((categories || []).map(c => [String(c.category_id), c.category_name]));
+
+                const recommended = (products || [])
+                    .filter(p => cartCategoryIds.includes(String(p.category_id)))
+                    .filter(p => !cart.some(item => String(item.product_id) === String(p.product_id)))
+                    .slice(0, 4);
+
+                const grid = document.getElementById('recommended-products');
+                grid.innerHTML = recommended.map(product => {
+                    const unit = Number(product.unit_price) || 0;
+                    const discount = Number(product.discount_percent) || 0;
+                    const original = discount > 0 ? unit / (1 - discount / 100) : unit;
+                    return `
+                        <div class="product-card">
+                            <div class="product-image">
+                                <img src="https://via.placeholder.com/250x250?text=${encodeURIComponent(product.product_name)}" alt="${product.product_name}">
+                                <span class="product-badge">-${discount}%</span>
+                            </div>
+                            <div class="product-info">
+                                <h3>${product.product_name}</h3>
+                                <p class="product-category">${categoryMap[String(product.category_id)] || product.category_id}</p>
+                                <div class="product-rating">⭐ ${product.rating_avg}/5</div>
+                                <div class="product-price">
+                                    <span class="original-price">${original.toLocaleString('vi-VN')}đ</span>
+                                    <span class="sale-price">${unit.toLocaleString('vi-VN')}đ</span>
+                                </div>
+                                <button class="btn btn-small" onclick="app.addToCart(${JSON.stringify(product)}, 1); renderCart(); alert('Đã thêm vào giỏ!');">Thêm vào giỏ</button>
+                            </div>
                         </div>
-                        <button class="btn btn-small" onclick="addToCart(${JSON.stringify(product)}, 1); renderCart(); alert('Đã thêm vào giỏ!');">Thêm vào giỏ</button>
-                    </div>
-                </div>
-            `).join('');
+                    `;
+                }).join('') || '<p style="grid-column: 1/-1; text-align:center;">Không có gợi ý.</p>';
+            } catch (e) {
+                console.warn('Failed to load recommended products', e);
+            }
         }
 
         // Initialize

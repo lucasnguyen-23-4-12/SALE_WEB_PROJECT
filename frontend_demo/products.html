@@ -36,10 +36,9 @@
             
             <div class="filter-group">
                 <h4>Danh mục</h4>
-                <label><input type="checkbox" value="smartphones" class="filter-checkbox"> Điện thoại</label>
-                <label><input type="checkbox" value="computers" class="filter-checkbox"> Máy tính</label>
-                <label><input type="checkbox" value="accessories" class="filter-checkbox"> Phụ kiện</label>
-                <label><input type="checkbox" value="wearables" class="filter-checkbox"> Đồng hồ thông minh</label>
+                <div id="filter-categories">
+                    <p style="margin: 8px 0; color: #666;">Đang tải danh mục...</p>
+                </div>
             </div>
 
             <div class="filter-group">
@@ -127,8 +126,8 @@
 
     <script src="js/app.js"></script>
     <script>
-        let sourceProducts = [...mockProducts]; // All products from backend or mock
-        let filteredProducts = [...mockProducts];
+        let sourceProducts = []; // All products loaded from backend
+        let filteredProducts = [];
 
         function renderProducts(products) {
             const grid = document.getElementById('products-grid');
@@ -142,9 +141,9 @@
 
             noProducts.style.display = 'none';
             grid.innerHTML = products.map(product => {
-                const unit = parseFloat(product.unit_price) || 0;
-                const discount = parseFloat(product.discount_percent) || 0;
-                const original = unit / (1 - discount / 100) || unit;
+                const unit = Number(product.unit_price) || 0;
+                const discount = Number(product.discount_percent) || 0;
+                const original = discount > 0 ? unit / (1 - discount / 100) : unit;
                 
                 return `
                 <div class="product-card">
@@ -154,7 +153,7 @@
                     </div>
                     <div class="product-info">
                         <h3>${product.product_name}</h3>
-                        <p class="product-category">${product.category_name}</p>
+                        <p class="product-category">${categoryMap[String(product.category_id)] || product.category_id}</p>
                         <div class="product-rating">⭐ ${product.rating_avg}/5 (${product.total_reviews} đánh giá)</div>
                         <div class="product-price">
                             <span class="original-price">${original.toLocaleString('vi-VN')}đ</span>
@@ -167,22 +166,40 @@
             }).join('');
         }
 
+        let categoryMap = {};
+
+        async function loadCategoriesForFilters() {
+            const wrap = document.getElementById('filter-categories');
+            try {
+                const cats = await app.getCategories();
+                categoryMap = Object.fromEntries((cats || []).map(c => [String(c.category_id), c.category_name]));
+
+                wrap.innerHTML = (cats || []).map(c => `
+                    <label>
+                        <input type="checkbox" value="${c.category_id}" class="filter-checkbox">
+                        ${c.category_name}
+                    </label>
+                `).join('') || '<p style="margin: 8px 0; color: #666;">Chưa có danh mục.</p>';
+            } catch (e) {
+                console.warn('Failed to load categories', e);
+                wrap.innerHTML = '<p style="margin: 8px 0; color: #c0392b;">Không tải được danh mục. Hãy chắc chắn backend đang chạy.</p>';
+            }
+        }
+
         // Filter functionality
         document.getElementById('apply-filters').addEventListener('click', function() {
             let filtered = [...sourceProducts];
 
-            // Category filter (match by category_name in mock data)
-            const categories = Array.from(document.querySelectorAll('.filter-checkbox:checked')).map(cb => cb.value);
-            if (categories.length > 0) {
-                filtered = filtered.filter(p => categories.includes(p.category_name));
-            }
+            // Category filter
+            const categories = Array.from(document.querySelectorAll('.filter-checkbox:checked')).map(cb => String(cb.value));
+            if (categories.length > 0) filtered = filtered.filter(p => categories.includes(String(p.category_id)));
 
             // Price filter
             const priceFilter = document.querySelector('.filter-price:checked');
             if (priceFilter) {
                 const range = priceFilter.value;
                 filtered = filtered.filter(p => {
-                    const price = p.unit_price / 1000000; // Convert to millions
+                    const price = (Number(p.unit_price) || 0) / 1000000; // Convert to millions
                     if (range === '0-5') return price < 5;
                     if (range === '5-10') return price >= 5 && price < 10;
                     if (range === '10-20') return price >= 10 && price < 20;
@@ -194,7 +211,7 @@
             // Rating filter
             const ratings = Array.from(document.querySelectorAll('.filter-rating:checked')).map(rb => parseFloat(rb.value));
             if (ratings.length > 0) {
-                filtered = filtered.filter(p => ratings.some(r => p.rating_avg >= r));
+                filtered = filtered.filter(p => ratings.some(r => Number(p.rating_avg) >= r));
             }
 
             filteredProducts = filtered;
@@ -215,34 +232,53 @@
 
             switch(sortValue) {
                 case 'price-low':
-                    sorted.sort((a, b) => a.unit_price - b.unit_price);
+                    sorted.sort((a, b) => (Number(a.unit_price) || 0) - (Number(b.unit_price) || 0));
                     break;
                 case 'price-high':
-                    sorted.sort((a, b) => b.unit_price - a.unit_price);
+                    sorted.sort((a, b) => (Number(b.unit_price) || 0) - (Number(a.unit_price) || 0));
                     break;
                 case 'rating':
-                    sorted.sort((a, b) => b.rating_avg - a.rating_avg);
+                    sorted.sort((a, b) => (Number(b.rating_avg) || 0) - (Number(a.rating_avg) || 0));
                     break;
                 case 'newest':
-                    sorted.sort((a, b) => b.product_id - a.product_id);
+                    sorted.sort((a, b) => (parseInt(b.product_id, 10) || 0) - (parseInt(a.product_id, 10) || 0));
                     break;
             }
 
             renderProducts(sorted);
         }
 
+        function getInitialCategoryIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const categoryId = params.get('category_id');
+            return categoryId ? String(categoryId) : null;
+        }
+
+        function preselectCategoryFilter(categoryId) {
+            if (!categoryId) return;
+            const cb = document.querySelector(`.filter-checkbox[value="${CSS.escape(categoryId)}"]`);
+            if (cb) cb.checked = true;
+        }
+
         // Initial render - load from backend
         document.addEventListener('DOMContentLoaded', async function() {
             try {
-                const products = await app.loadProductList(0, 100);
+                await loadCategoriesForFilters();
+                const products = await app.getProducts({ skip: 0, limit: 100 });
                 sourceProducts = products;
                 filteredProducts = [...sourceProducts];
+
+                const categoryId = getInitialCategoryIdFromUrl();
+                preselectCategoryFilter(categoryId);
+                if (categoryId) {
+                    filteredProducts = filteredProducts.filter(p => String(p.category_id) === categoryId);
+                }
+
                 renderProducts(filteredProducts);
             } catch (err) {
-                console.warn('Could not load products from server, using mock', err);
-                sourceProducts = mockProducts;
-                filteredProducts = [...sourceProducts];
-                renderProducts(filteredProducts);
+                console.warn('Could not load products from server', err);
+                document.getElementById('products-grid').innerHTML =
+                    '<p style="grid-column: 1/-1; text-align:center;">Không tải được sản phẩm từ backend. Hãy chắc chắn backend đang chạy tại <code>http://127.0.0.1:8000</code>.</p>';
             }
         });
     </script>

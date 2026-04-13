@@ -141,12 +141,12 @@
                     <div class="dashboard-cards">
                         <div class="info-card">
                             <h3>📦 Đơn hàng gần đây</h3>
-                            <p class="card-value">3</p>
+                            <p class="card-value" id="card-orders-count">0</p>
                             <a href="#" onclick="showDashboardTab('orders')">Xem tất cả →</a>
                         </div>
                         <div class="info-card">
                             <h3>❤️ Sản phẩm yêu thích</h3>
-                            <p class="card-value">5</p>
+                            <p class="card-value" id="card-wishlist-count">0</p>
                             <a href="#" onclick="showDashboardTab('wishlist')">Xem danh sách →</a>
                         </div>
                         <div class="info-card">
@@ -171,34 +171,11 @@
                             <tr>
                                 <th>Mã đơn hàng</th>
                                 <th>Ngày đặt</th>
-                                <th>Tổng tiền</th>
                                 <th>Trạng thái</th>
-                                <th>Hành động</th>
+                                <th>Payment</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>#001234</td>
-                                <td>01/03/2026</td>
-                                <td>15,500,000đ</td>
-                                <td><span class="status-badge status-delivered">✓ Đã giao</span></td>
-                                <td><a href="#" class="action-link">Chi tiết</a></td>
-                            </tr>
-                            <tr>
-                                <td>#001233</td>
-                                <td>28/02/2026</td>
-                                <td>8,200,000đ</td>
-                                <td><span class="status-badge status-shipping">📦 Đang giao</span></td>
-                                <td><a href="#" class="action-link">Theo dõi</a></td>
-                            </tr>
-                            <tr>
-                                <td>#001232</td>
-                                <td>25/02/2026</td>
-                                <td>3,500,000đ</td>
-                                <td><span class="status-badge status-confirmed">✓ Đã xác nhận</span></td>
-                                <td><a href="#" class="action-link">Chi tiết</a></td>
-                            </tr>
-                        </tbody>
+                        <tbody id="orders-tbody"></tbody>
                     </table>
                 </div>
 
@@ -209,41 +186,25 @@
                     <form class="profile-form">
                         <div class="form-group">
                             <label>Họ và tên</label>
-                            <input type="text" id="profile-name" value="Nguyễn Văn A">
+                            <input type="text" id="profile-name" value="">
                         </div>
 
                         <div class="form-group">
                             <label>Email</label>
-                            <input type="email" id="profile-email" value="user@example.com">
+                            <input type="email" id="profile-email" value="" disabled>
                         </div>
 
                         <div class="form-group">
                             <label>Số điện thoại</label>
-                            <input type="tel" id="profile-phone" value="0123456789">
+                            <input type="tel" id="profile-phone" value="">
                         </div>
 
                         <div class="form-group">
-                            <label>Ngày sinh</label>
-                            <input type="date" id="profile-dob">
+                            <label>Địa chỉ</label>
+                            <input type="text" id="profile-address" value="">
                         </div>
 
-                        <div class="form-group">
-                            <label>Giới tính</label>
-                            <select>
-                                <option>Nam</option>
-                                <option>Nữ</option>
-                                <option>Khác</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Thay đổi mật khẩu</label>
-                            <input type="password" placeholder="Mật khẩu hiện tại">
-                            <input type="password" placeholder="Mật khẩu mới">
-                            <input type="password" placeholder="Xác nhận mật khẩu mới">
-                        </div>
-
-                        <button type="button" class="btn btn-primary" onclick="alert('Lưu thông tin thành công!')">💾 Lưu thay đổi</button>
+                        <button type="button" class="btn btn-primary" onclick="handleSaveProfile()">💾 Lưu thay đổi</button>
                     </form>
                 </div>
 
@@ -259,24 +220,38 @@
                 <div id="tab-addresses" class="dashboard-tab">
                     <h2>Địa chỉ giao hàng</h2>
                     
-                    <div class="addresses-list">
-                        <div class="address-card">
-                            <div class="address-header">
-                                <h3>Địa chỉ chính</h3>
-                                <span class="badge">Mặc định</span>
-                            </div>
-                            <p>Nguyễn Văn A</p>
-                            <p>123 Đường Lê Lợi, Hoàn Kiếm, Hà Nội</p>
-                            <p>0123456789</p>
-                            <div class="address-actions">
-                                <a href="#">Chỉnh sửa</a>
-                                <a href="#">Xóa</a>
-                            </div>
-                        </div>
+                    <div class="addresses-list" id="addresses-list"></div>
 
-                        <div class="add-address-card">
-                            <button class="btn btn-secondary" onclick="alert('Chuyển hướng đến form thêm địa chỉ')">+ Thêm địa chỉ mới</button>
+                    <div class="auth-form" style="max-width: 900px; margin: 24px 0 0;">
+                        <h3>Thêm địa chỉ mới</h3>
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 2;">
+                                <label>Địa chỉ (street)</label>
+                                <input type="text" id="addr-street" placeholder="Số nhà, đường...">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Thành phố (city)</label>
+                                <input type="text" id="addr-city" placeholder="Hà Nội">
+                            </div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 1;">
+                                <label>Quận/Huyện (district)</label>
+                                <input type="text" id="addr-district" placeholder="Hoàn Kiếm">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Mã bưu chính (zipcode)</label>
+                                <input type="text" id="addr-zipcode" placeholder="100000">
+                            </div>
+                            <div class="form-group" style="flex: 0 0 160px;">
+                                <label>Mặc định</label>
+                                <select id="addr-default">
+                                    <option value="1">Có</option>
+                                    <option value="0" selected>Không</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="handleAddAddress()">+ Thêm địa chỉ</button>
                     </div>
                 </div>
             </div>
@@ -342,39 +317,21 @@
                 return;
             }
 
-            // Gọi API đăng nhập
-            const loginData = {
-                email_or_phone: email,
-                password: password
-            };
+            (async () => {
+                try {
+                    const tokenResp = await app.loginCustomer({ email_or_phone: email, password });
+                    app.setToken(tokenResp.access_token);
 
-            fetch('http://127.0.0.1:8000/customers/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(loginData)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Đăng nhập thất bại');
+                    const profile = await app.getMyProfile();
+                    app.saveUserProfile(profile);
+
+                    showDashboard();
+                    alert('✓ Đăng nhập thành công!');
+                } catch (error) {
+                    console.error('Lỗi:', error);
+                    alert('❌ Đăng nhập thất bại: ' + error.message);
                 }
-                return response.json();
-            })
-            .then(data => {
-                // Lưu thông tin customer vào localStorage
-                localStorage.setItem('user', JSON.stringify({
-                    customer_id: data.customer_id,
-                    name: data.customer_name,
-                    email: data.customer_email,
-                    phone: data.phone_number
-                }));
-
-                showDashboard();
-                alert('✓ Đăng nhập thành công!');
-            })
-            .catch(error => {
-                console.error('Lỗi:', error);
-                alert('❌ Sai email/số điện thoại hoặc mật khẩu!');
-            });
+            })();
         }
 
         function handleSignup() {
@@ -394,7 +351,6 @@
                 return;
             }
 
-            // Gọi API tạo customer
             const customerData = {
                 customer_name: name,
                 customer_email: email,
@@ -403,68 +359,233 @@
                 password: password
             };
 
-            fetch('http://127.0.0.1:8000/customers/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(customerData)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Tạo tài khoản thất bại');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Lưu thông tin customer vào localStorage
-                localStorage.setItem('user', JSON.stringify({
-                    customer_id: data.customer_id,
-                    name: data.customer_name,
-                    email: data.customer_email,
-                    phone: data.phone_number
-                }));
+            (async () => {
+                try {
+                    await app.createCustomer(customerData);
 
-                showDashboard();
-                alert('✓ Tạo tài khoản thành công!');
-            })
-            .catch(error => {
-                console.error('Lỗi:', error);
-                alert('❌ Lỗi tạo tài khoản. Email có thể đã tồn tại.');
-            });
+                    const tokenResp = await app.loginCustomer({ email_or_phone: email, password });
+                    app.setToken(tokenResp.access_token);
+
+                    const profile = await app.getMyProfile();
+                    app.saveUserProfile(profile);
+
+                    showDashboard();
+                    alert('✓ Tạo tài khoản thành công!');
+                } catch (error) {
+                    console.error('Lỗi:', error);
+                    alert('❌ Lỗi tạo tài khoản: ' + error.message);
+                }
+            })();
         }
 
         function showDashboard() {
-            const user = JSON.parse(localStorage.getItem('user'));
+            const user = app.getUserProfile();
             document.getElementById('login-section').classList.remove('active');
             document.getElementById('signup-section').classList.remove('active');
             document.getElementById('dashboard-section').classList.add('active');
 
-            document.getElementById('dashboard-name').textContent = user.name;
-            document.getElementById('dashboard-email').textContent = user.email;
-            document.getElementById('welcome-name').textContent = user.name;
+            document.getElementById('dashboard-name').textContent = user.customer_name || 'Khách hàng';
+            document.getElementById('dashboard-email').textContent = user.customer_email || '';
+            document.getElementById('welcome-name').textContent = user.customer_name || 'Khách hàng';
+
+            document.getElementById('profile-name').value = user.customer_name || '';
+            document.getElementById('profile-email').value = user.customer_email || '';
+            document.getElementById('profile-phone').value = user.phone_number || '';
+            document.getElementById('profile-address').value = user.address || '';
+
+            loadDashboardData();
         }
 
         function handleLogout() {
-            localStorage.removeItem('user');
+            app.clearToken();
+            app.clearUserProfile();
             document.getElementById('dashboard-section').classList.remove('active');
             document.getElementById('login-section').classList.add('active');
             alert('✓ Đăng xuất thành công!');
         }
 
-        function showDashboardTab(tabName) {
+        async function showDashboardTab(tabName, ev) {
             document.querySelectorAll('.dashboard-tab').forEach(tab => tab.classList.remove('active'));
             document.getElementById('tab-' + tabName).classList.add('active');
 
             document.querySelectorAll('.dashboard-menu .menu-item').forEach(item => item.classList.remove('active'));
-            event.target.classList.add('active');
+            const target = (ev && ev.target) || (window.event && window.event.target);
+            if (target && target.classList && target.classList.contains('menu-item')) {
+                target.classList.add('active');
+            }
+
+            if (tabName === 'orders') await loadOrders();
+            if (tabName === 'wishlist') await loadWishlist();
+            if (tabName === 'addresses') await loadAddresses();
         }
 
         // Check if user is logged in
-        window.addEventListener('load', function() {
-            const user = localStorage.getItem('user');
-            if (user) {
+        window.addEventListener('load', async function() {
+            if (!app.getToken()) return;
+            try {
+                const profile = await app.getMyProfile();
+                app.saveUserProfile(profile);
                 showDashboard();
+            } catch (e) {
+                console.warn('Token invalid/expired', e);
+                app.clearToken();
+                app.clearUserProfile();
             }
         });
+
+        function statusBadge(status) {
+            const s = String(status || '').toLowerCase();
+            if (s.includes('ship')) return '<span class="status-badge status-shipping">📦 ' + status + '</span>';
+            if (s.includes('deliver')) return '<span class="status-badge status-delivered">✓ ' + status + '</span>';
+            if (s.includes('confirm')) return '<span class="status-badge status-confirmed">✓ ' + status + '</span>';
+            return '<span class="status-badge status-pending">⏳ ' + (status || 'Pending') + '</span>';
+        }
+
+        async function loadOrders() {
+            const tbody = document.getElementById('orders-tbody');
+            tbody.innerHTML = '<tr><td colspan="4">Đang tải...</td></tr>';
+            try {
+                const orders = await app.getMyOrders({ skip: 0, limit: 50 });
+                document.getElementById('card-orders-count').textContent = String((orders || []).length);
+
+                tbody.innerHTML = (orders || []).map(o => `
+                    <tr>
+                        <td>#${o.order_id}</td>
+                        <td>${o.order_date || ''}</td>
+                        <td>${statusBadge(o.status)}</td>
+                        <td>${o.payment_method_id || ''}</td>
+                    </tr>
+                `).join('') || '<tr><td colspan="4">Chưa có đơn hàng.</td></tr>';
+            } catch (e) {
+                console.error(e);
+                tbody.innerHTML = '<tr><td colspan="4">Không tải được đơn hàng: ' + e.message + '</td></tr>';
+            }
+        }
+
+        async function loadWishlist() {
+            const grid = document.getElementById('wishlist-products');
+            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Đang tải...</p>';
+            try {
+                const items = await app.getMyWishlist();
+                document.getElementById('card-wishlist-count').textContent = String((items || []).length);
+
+                if (!items || !items.length) {
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Chưa có sản phẩm yêu thích</p>';
+                    return;
+                }
+
+                const products = await Promise.all(items.map(i => app.getProductById(i.product_id)));
+                grid.innerHTML = products.map((p, idx) => `
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/250x250?text=${encodeURIComponent(p.product_name)}" alt="${p.product_name}">
+                        </div>
+                        <div class="product-info">
+                            <h3>${p.product_name}</h3>
+                            <div class="product-price">
+                                <span class="sale-price">${app.formatPrice(p.unit_price)}</span>
+                            </div>
+                            <a href="product-detail.html?id=${p.product_id}" class="btn btn-small">Xem chi tiết</a>
+                            <button class="btn btn-secondary btn-small" style="margin-top:8px;" onclick="handleRemoveWishlist('${items[idx].wishlist_id}')">Bỏ yêu thích</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #c0392b;">Không tải được wishlist: ' + e.message + '</p>';
+            }
+        }
+
+        async function handleRemoveWishlist(wishlistId) {
+            try {
+                await app.removeWishlistItem(wishlistId);
+                await loadWishlist();
+            } catch (e) {
+                console.error(e);
+                alert('Không thể xóa wishlist: ' + e.message);
+            }
+        }
+
+        async function loadAddresses() {
+            const wrap = document.getElementById('addresses-list');
+            wrap.innerHTML = '<p>Đang tải...</p>';
+            try {
+                const addresses = await app.getMyAddresses();
+                wrap.innerHTML = (addresses || []).map(a => `
+                    <div class="address-card">
+                        <div class="address-header">
+                            <h3>Địa chỉ #${a.address_id}</h3>
+                            ${Number(a.is_default) === 1 ? '<span class="badge">Mặc định</span>' : ''}
+                        </div>
+                        <p>${[a.street, a.district, a.city, a.zipcode].filter(Boolean).join(', ')}</p>
+                        <div class="address-actions">
+                            <a href="#" onclick="handleDeleteAddress('${a.address_id}'); return false;">Xóa</a>
+                        </div>
+                    </div>
+                `).join('') || '<p>Chưa có địa chỉ.</p>';
+            } catch (e) {
+                console.error(e);
+                wrap.innerHTML = '<p style="color:#c0392b;">Không tải được địa chỉ: ' + e.message + '</p>';
+            }
+        }
+
+        async function handleAddAddress() {
+            try {
+                const customerId = app.getCustomerIdFromToken();
+                await app.createAddress({
+                    customer_id: String(customerId),
+                    street: document.getElementById('addr-street').value || null,
+                    city: document.getElementById('addr-city').value || null,
+                    district: document.getElementById('addr-district').value || null,
+                    zipcode: document.getElementById('addr-zipcode').value || null,
+                    is_default: parseInt(document.getElementById('addr-default').value, 10) || 0,
+                });
+                document.getElementById('addr-street').value = '';
+                document.getElementById('addr-city').value = '';
+                document.getElementById('addr-district').value = '';
+                document.getElementById('addr-zipcode').value = '';
+                await loadAddresses();
+                alert('✓ Đã thêm địa chỉ');
+            } catch (e) {
+                console.error(e);
+                alert('Không thể thêm địa chỉ: ' + e.message);
+            }
+        }
+
+        async function handleDeleteAddress(addressId) {
+            if (!confirm('Xóa địa chỉ này?')) return;
+            try {
+                await app.deleteAddress(addressId);
+                await loadAddresses();
+            } catch (e) {
+                console.error(e);
+                alert('Không thể xóa địa chỉ: ' + e.message);
+            }
+        }
+
+        async function handleSaveProfile() {
+            try {
+                const updated = await app.updateMyProfile({
+                    customer_name: document.getElementById('profile-name').value || null,
+                    phone_number: document.getElementById('profile-phone').value || null,
+                    address: document.getElementById('profile-address').value || null,
+                });
+                app.saveUserProfile(updated);
+                showDashboard();
+                alert('✓ Đã lưu thông tin');
+            } catch (e) {
+                console.error(e);
+                alert('Không thể lưu: ' + e.message);
+            }
+        }
+
+        async function loadDashboardData() {
+            await Promise.all([
+                loadOrders(),
+                loadWishlist(),
+                loadAddresses(),
+            ]);
+        }
     </script>
 </body>
 </html>
